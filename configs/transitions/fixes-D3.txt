@@ -1,0 +1,60 @@
+! =====================================================================
+! FIXES D3 (tests/FINDINGS.md). Paste onto the already-built D3.pkt.
+! Named ACLs are deleted and rebuilt whole, so the line order is exact;
+! the 'ip access-group ... in' on each SVI keeps pointing at the name.
+! The ptlab runner pushes this automatically in 'prepare'.
+! =====================================================================
+!@CORE-MLS
+no ip access-list extended STAFF-IN
+ip access-list extended STAFF-IN
+ remark Staff: DHCP, DNS, EHR web, IoT dashboard, ping servers, Internet
+ permit udp any host 255.255.255.255 eq 67
+ permit udp any host 10.10.20.11 eq 67
+ permit udp 10.10.10.0 0.0.0.255 host 10.10.20.11 eq 53
+ permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.10 eq 80
+ permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.10 eq 443
+ permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.12 eq 80
+ permit icmp 10.10.10.0 0.0.0.255 10.10.20.0 0.0.0.255 echo
+ permit icmp 10.10.10.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply
+ deny ip any 10.0.0.0 0.255.255.255
+ permit ip 10.10.10.0 0.0.0.255 any
+no ip access-list extended MONITORS-IN
+ip access-list extended MONITORS-IN
+ remark Patient monitors: DHCP + IoT registration server only
+ permit udp any host 255.255.255.255 eq 67
+ permit udp any host 10.10.20.11 eq 67
+ permit tcp 10.10.31.0 0.0.0.255 host 10.10.20.12 eq 80
+ permit icmp 10.10.31.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply
+ deny ip any any
+no ip access-list extended INFUSION-IN
+ip access-list extended INFUSION-IN
+ remark Infusion pumps: DHCP + IoT registration server only
+ permit udp any host 255.255.255.255 eq 67
+ permit udp any host 10.10.20.11 eq 67
+ permit tcp 10.10.32.0 0.0.0.255 host 10.10.20.12 eq 80
+ permit icmp 10.10.32.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply
+ deny ip any any
+no ip access-list extended BLDGIOT-IN
+ip access-list extended BLDGIOT-IN
+ remark Building IoT: DHCP + IoT registration server only
+ permit udp any host 255.255.255.255 eq 67
+ permit udp any host 10.10.20.11 eq 67
+ permit tcp 10.10.40.0 0.0.0.255 host 10.10.20.12 eq 80
+ permit icmp 10.10.40.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply
+ deny ip any any
+no ip access-list extended GUEST-IN
+ip access-list extended GUEST-IN
+ remark Guests: DHCP, DNS, Internet. Never internal subnets
+ permit udp any host 255.255.255.255 eq 67
+ permit udp any host 10.10.20.11 eq 67
+ permit udp 10.10.50.0 0.0.0.255 host 10.10.20.11 eq 53
+ deny ip any 10.0.0.0 0.255.255.255
+ permit ip 10.10.50.0 0.0.0.255 any
+!@SW-SRV
+vlan 999
+ name BLACKHOLE
+interface range FastEthernet0/5 - 24, GigabitEthernet0/2
+ description UNUSED - parked
+ switchport mode access
+ switchport access vlan 999
+ shutdown

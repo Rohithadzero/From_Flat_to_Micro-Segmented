@@ -1,0 +1,5 @@
+design,devices_configured,config_lines,aces,security_features,feature_list
+D0,7,189,1,0,
+D1,7,274,1,1,VLAN segmentation
+D2,7,302,17,2,VLAN segmentation; Inter-VLAN ACLs
+D3,8,571,52,12,VLAN segmentation; Inter-VLAN ACLs; Stateful firewall (ASA); Port security; DHCP snooping; SSH-only management; VTY source restriction; BPDU Guard / PortFast; Native-VLAN hardening; Trunk allowed-VLAN pruning; Unused ports disabled; Password encryption

@@ -1,0 +1,22 @@
+! =====================================================================
+! TRANSITION D2 -> D3  (paste BEFORE the D3 config files)
+! 1. Physically: add ASA-SRV (5506-X); move cables so that
+!    CORE-MLS G0/2 -> ASA-SRV G1/1 and ASA-SRV G1/2 -> SW-SRV G0/1.
+! 2. Remove D2 leftovers below. VLAN 20 must leave the core, otherwise
+!    the connected 10.10.20.0/24 beats the static route to the ASA and
+!    server traffic would bypass the firewall.
+! =====================================================================
+!@CORE-MLS
+no interface Vlan20
+no interface Vlan30
+! Named ACLs APPEND: delete D2's versions, or D3's BLDGIOT-IN/GUEST-IN
+! would keep D2's old lines (incl. "deny ip any any") on top.
+no ip access-list extended MEDIOT-IN
+no ip access-list extended BLDGIOT-IN
+no ip access-list extended GUEST-IN
+no vlan 20
+no vlan 30
+!@SW-WARD-A
+no vlan 30
+!@SW-WARD-B
+no vlan 30

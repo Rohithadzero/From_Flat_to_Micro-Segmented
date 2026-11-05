@@ -1,0 +1,59 @@
+! =====================================================================
+! SW-WARD-B  (Cisco 2960-24TT)  -  D2 ZONE ACLs  (identical to D1 - the ACLs live on CORE-MLS)
+! =====================================================================
+enable
+configure terminal
+hostname SW-WARD-B
+no ip domain-lookup
+enable secret cisco
+!
+vlan 10
+ name STAFF
+vlan 30
+ name MED-IOT
+vlan 99
+ name MGMT
+!
+interface FastEthernet0/1
+ description Nurse-PC-B (staff)
+ switchport mode access
+ switchport access vlan 10
+interface FastEthernet0/2
+ description Monitor-B1 (patient monitor)
+ switchport mode access
+ switchport access vlan 30
+interface FastEthernet0/3
+ description Pump-B1 (infusion pump)
+ switchport mode access
+ switchport access vlan 30
+interface FastEthernet0/4
+ description IOT-COMPROMISED test node - location 2 (Ward B)
+ switchport mode access
+ switchport access vlan 30
+interface FastEthernet0/5
+ description Staff wall jack
+ switchport mode access
+ switchport access vlan 10
+!
+interface GigabitEthernet0/1
+ description 802.1Q trunk to CORE-MLS Fa0/2
+ switchport mode trunk
+!
+interface Vlan1
+ no ip address
+ shutdown
+interface Vlan99
+ description Management
+ ip address 10.10.99.12 255.255.255.0
+ no shutdown
+ip default-gateway 10.10.99.1
+!
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input telnet
+end
+write memory

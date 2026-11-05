@@ -1,0 +1,26 @@
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+% =====================================================================
+% TODO(authors): add your own interpretation once the measured data is in,
+% in particular whether the observed matrix changes any argument below.
+
+\textbf{VLANs enable policy; they are not policy.}
+D1 costs \deltaLinesDone{} lines and contains nothing, but it creates the subnets and SVIs on which every later rule is applied. Once VLANs exist, D2's first protection costs \deltaAcesDtwo{} ACEs on one device. The number of VLANs says little about containment; what each SVI may forward says almost everything.
+
+\textbf{Zone rules must exclude the network's own addresses.}
+The router-self-address class is easy to miss because the ACL reads correctly. ``IoT may reach the server zone'' and ``guests may not reach 10/8'' both describe hosts, while routers also own addresses inside and outside those ranges. A test plan written from the same mental model misses the exposure too: our A4 procedure probed the management VLAN, the node's own gateway and the core--edge link, never 10.10.20.1. A reachability model that enumerates every interface address of every device found the gap. In practice this argues for pairing any zone policy with a VTY \cfg{access-class} and with an explicit deny for infrastructure addresses ahead of the zone permit. D3 reaches the same effect another way: an \cfg{access-class}, host-specific permits that never match a gateway, and a server gateway that sits on the ASA.
+
+\textbf{Least privilege is what protects data.}
+D2 cuts reachable services from 10 to 4 but leaves the EHR open, because the most sensitive asset and the service every IoT device needs share one zone. Only a host-and-port rule separates them, which is the practical meaning of a per-resource access decision~\cite{nist80027}. The analyser's mutation tests show that the core ACLs and the ASA each block the EHR alone. The firewall therefore adds independence and connection state rather than a new outcome in Table~\ref{tab:attacks}, at the price of \aceAsaDthree{} ACEs that must be kept consistent with the core by hand.
+
+\textbf{Minimum viable segmentation.}
+The step from D2 to D3 bundles independent controls, and each D3 block has a single cause. Host-and-port SVI ACLs close A2 and the cross-class part of A3, DHCP snooping closes A5, and port security closes A6. For a small hospital without a firewall team we therefore recommend four measures:
+(i) D2's zones;
+(ii) each IoT zone permit replaced by \cfg{permit tcp \ldots{} host 10.10.20.12 eq 80};
+(iii) DHCP snooping and sticky port security on clinical ports;
+(iv) SSH with a VTY \cfg{access-class}.
+Every line of this set already exists in our D3 files. We have not, however, measured it as a separate design.
+
+\textbf{Complexity is concentrated.}
+Most of D3's extra lines are templated Layer-2 hardening: six port-security and STP lines per access port, plus trunk and parking blocks. The policy itself is \aceCoreDthree{}~ACEs on the core and \aceAsaDthree{} on the ASA. The hard part to keep correct is therefore small, and as F-1 and H-1 show, it is exactly where errors hide. This supports running a reachability check on every policy change, rather than relying on hand-written test plans alone.

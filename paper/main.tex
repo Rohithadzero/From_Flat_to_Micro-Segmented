@@ -1,0 +1,109 @@
+% =====================================================================
+% From Flat to Micro-Segmented: A Simulation-Based Evaluation of
+% Lateral-Movement Containment for Compromised IoMT Devices in a
+% Smart-Hospital Network
+%
+% Format: IEEE conference template conference_101719.tex
+% (IEEE_Conference_Template__1_.zip in the project root; its IEEEtran.cls
+% is byte-identical to the copy in this folder, see README.md).
+% Build: powershell -ExecutionPolicy Bypass -File build.ps1
+%   (regenerates tables/ and figures/ from ../results and ../configs,
+%    then compiles if LaTeX is present, otherwise writes overleaf.zip)
+% =====================================================================
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+
+% ---- packages of the IEEE conference template ----
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+% ---- additions this paper needs ----
+\usepackage[T1]{fontenc}  % hyphenation of words with accents; Times stays the body font
+\usepackage{booktabs}     % \toprule/\midrule/\bottomrule in the generated tables
+\usepackage{url}          % URLs in the references
+\usepackage{balance}      % equal columns on the last page
+
+\graphicspath{{figures/}}
+
+% ---- outcome symbols used by the generated tables (robust: used in captions) ----
+\DeclareRobustCommand{\outcomebox}[2]{{\setlength{\fboxsep}{1.2pt}\colorbox{#1}{\makebox[1.1em]{\textbf{#2}}}}}
+\DeclareRobustCommand{\oS}{\outcomebox{red!30}{S}}      % attack succeeded
+\DeclareRobustCommand{\oP}{\outcomebox{yellow!45}{P}}   % partial: some targets reachable
+\DeclareRobustCommand{\oB}{\outcomebox{green!25}{B}}    % blocked
+\DeclareRobustCommand{\cmark}{\ensuremath{\checkmark}}
+\DeclareRobustCommand{\xmark}{\ensuremath{\times}}
+
+% ---- data switches and numbers written by gen_tables.py ----
+\newif\ifmeasured       % true only when every observed column of the core tests is filled
+\newif\ifhavestatic     % results/static-analysis*.csv present
+\newif\ifhavefix        % paper/data/fix-impact.csv present
+\newif\ifhavemetrics    % results/metrics.csv present
+\newif\ifhaveoverhead   % results/overhead.csv has measured values
+\newif\ifhavedetection  % results/detection.csv present
+\newif\ifhaveqone       % Q1 timings measured
+\input{tables/numbers}
+% \expnote prints "(expected, not yet measured)" until the core results are measured.
+\DeclareRobustCommand{\expnote}{\ifmeasured\else\ \statusNote\fi}
+
+\newcommand{\cfg}[1]{\texttt{#1}}   % configuration keyword, ACL or command
+
+\begin{document}
+
+% Template rule: no sub-title, symbols, special characters, footnotes or math in the title.
+\title{From Flat to Micro-Segmented: A Simulation-Based Evaluation of Lateral-Movement Containment for Compromised IoMT Devices in a Smart-Hospital Network
+% \thanks{Identify applicable funding agency here. If none, delete this.}
+}
+
+% TODO(authors): replace every placeholder below (names, author order, e-mail
+% or ORCID). The faculty guide must be a co-author (course rule for the
+% research-paper route). Template layout per author: name / dept. / organization /
+% City, Country / e-mail or ORCID; the class is designed for up to six authors.
+\author{\IEEEauthorblockN{1\textsuperscript{st} Author Name}
+\IEEEauthorblockA{\textit{School of Computer Science and Engineering} \\
+\textit{RV University}\\
+Bengaluru, India \\
+author1@example.edu}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Author Name}
+\IEEEauthorblockA{\textit{School of Computer Science and Engineering} \\
+\textit{RV University}\\
+Bengaluru, India \\
+author2@example.edu}
+\and
+\IEEEauthorblockN{3\textsuperscript{rd} Faculty Guide Name}
+\IEEEauthorblockA{\textit{School of Computer Science and Engineering} \\
+\textit{RV University}\\
+Bengaluru, India \\
+guide@example.edu}
+}
+
+\maketitle
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/related}
+\input{sections/methodology}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/limitations}
+\input{sections/conclusion}
+
+% Secondary tables (outside the main-text page budget). IEEE order:
+% appendices, then the Acknowledgment, then the References.
+\input{sections/appendix}
+
+% Template component head "Acknowledgment" (unnumbered, before the references).
+% TODO(authors): uncomment and write it, or delete it. Sponsors go in the
+% \thanks footnote of the title instead.
+% \section*{Acknowledgment}
+% ...
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

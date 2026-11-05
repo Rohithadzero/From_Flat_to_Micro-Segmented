@@ -1,0 +1,54 @@
+! =====================================================================
+! EDGE-RTR  (Cisco 2911)  -  D2 (unchanged from D0)
+! Role: Internet edge. PAT (NAT overload), default route to ISP,
+!       OSPF neighbour of CORE-MLS (advertises the default route).
+! Management: Telnet with a shared password (deliberately weak baseline).
+! =====================================================================
+enable
+configure terminal
+hostname EDGE-RTR
+no ip domain-lookup
+enable secret cisco
+service timestamps log datetime msec
+!
+interface GigabitEthernet0/0
+ description WAN to ISP-RTR G0/0
+ ip address 198.51.100.2 255.255.255.252
+ ip nat outside
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description Routed link to CORE-MLS G0/1
+ ip address 10.10.255.1 255.255.255.252
+ ip nat inside
+ no shutdown
+!
+! ---- Default route to the ISP ----
+ip route 0.0.0.0 0.0.0.0 198.51.100.1
+! ---- Floating static backup (AD 250): used only if OSPF is down ----
+ip route 10.10.0.0 255.255.0.0 10.10.255.2 250
+!
+!
+! ---- PAT: translate every 10.10.x.x source to the WAN address ----
+access-list 1 remark Hospital private range allowed to use NAT
+access-list 1 permit 10.10.0.0 0.0.255.255
+ip nat inside source list 1 interface GigabitEthernet0/0 overload
+!
+! ---- OSPF: learn hospital subnets from the core, give it a default ----
+router ospf 1
+ router-id 1.1.1.1
+ network 10.10.255.0 0.0.0.3 area 0
+ default-information originate
+!
+ntp server 10.10.20.13
+logging host 10.10.20.13
+!
+line console 0
+ password cisco
+ login
+line vty 0 4
+ password cisco
+ login
+ transport input telnet
+end
+write memory

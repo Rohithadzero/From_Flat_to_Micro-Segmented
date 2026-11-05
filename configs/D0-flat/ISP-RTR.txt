@@ -1,0 +1,25 @@
+! =====================================================================
+! ISP-RTR  (Cisco 2911)  -  simulated Internet Service Provider
+! Same configuration in ALL designs (D0, D1, D2, D3)
+! Paste in CLI tab after the "Router>" prompt.
+! =====================================================================
+enable
+configure terminal
+hostname ISP-RTR
+no ip domain-lookup
+!
+interface GigabitEthernet0/0
+ description WAN link to hospital EDGE-RTR G0/0
+ ip address 198.51.100.1 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description "Internet" LAN with public web server
+ ip address 203.0.113.1 255.255.255.0
+ no shutdown
+!
+! No route back to 10.10.0.0/16 is needed: the hospital is hidden
+! behind PAT (NAT overload) on EDGE-RTR, so every reply goes to
+! 198.51.100.2, which is directly connected.
+end
+write memory

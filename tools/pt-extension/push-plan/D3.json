@@ -1,0 +1,182 @@
+[
+ {
+  "device": "CORE-MLS",
+  "commands": "no interface Vlan20\nno interface Vlan30\nno ip access-list extended MEDIOT-IN\nno ip access-list extended BLDGIOT-IN\nno ip access-list extended GUEST-IN\nno vlan 20\nno vlan 30"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "no vlan 30"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "no vlan 30"
+ },
+ {
+  "device": "EDGE-RTR",
+  "commands": "hostname EDGE-RTR\nno ip domain-lookup\nenable secret Edge@2026\nservice password-encryption\nservice timestamps log datetime msec\nbanner motd ^Authorised access only. Activity is logged.^\nip domain-name hospital.local\nusername netadmin privilege 15 secret Adm1n@2026\ncrypto key generate rsa general-keys modulus 1024"
+ },
+ {
+  "device": "EDGE-RTR",
+  "commands": "ip ssh version 2\nip ssh time-out 60\nip ssh authentication-retries 3\ninterface GigabitEthernet0/0\n description WAN to ISP-RTR G0/0\n ip address 198.51.100.2 255.255.255.252\n ip nat outside\n no shutdown"
+ },
+ {
+  "device": "EDGE-RTR",
+  "commands": "interface GigabitEthernet0/1\n description Routed link to CORE-MLS G0/1\n ip address 10.10.255.1 255.255.255.252\n ip nat inside\n no shutdown"
+ },
+ {
+  "device": "EDGE-RTR",
+  "commands": "interface GigabitEthernet0/2\n shutdown"
+ },
+ {
+  "device": "EDGE-RTR",
+  "commands": "ip route 0.0.0.0 0.0.0.0 198.51.100.1\nip route 10.10.0.0 255.255.0.0 10.10.255.2 250\naccess-list 1 remark Hospital private range allowed to use NAT\naccess-list 1 permit 10.10.0.0 0.0.255.255\nip nat inside source list 1 interface GigabitEthernet0/0 overload\naccess-list 10 remark Management VLAN only\naccess-list 10 permit 10.10.99.0 0.0.0.255\nrouter ospf 1\n router-id 1.1.1.1\n network 10.10.255.0 0.0.0.3 area 0\n default-information originate\nntp server 10.10.20.13\nlogging host 10.10.20.13\nline console 0\n login local\n exec-timeout 5 0\nline vty 0 4\n access-class 10 in\n login local\n transport input ssh\n exec-timeout 5 0"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "hostname CORE-MLS\nno ip domain-lookup\nenable secret Core@2026\nservice password-encryption\nservice timestamps log datetime msec\nbanner motd ^Authorised access only. Activity is logged.^\nip routing\nip domain-name hospital.local\nusername netadmin privilege 15 secret Adm1n@2026\ncrypto key generate rsa general-keys modulus 1024"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "ip ssh version 2\nip ssh time-out 60\nip ssh authentication-retries 3\nvlan 10\n name STAFF\nvlan 31\n name MED-MONITORS\nvlan 32\n name MED-INFUSION\nvlan 40\n name BLDG-IOT\nvlan 50\n name GUEST\nvlan 99\n name MGMT\nvlan 998\n name NATIVE-UNUSED\nvlan 999\n name BLACKHOLE\ninterface GigabitEthernet0/1\n description Routed link to EDGE-RTR G0/1\n no switchport\n ip address 10.10.255.2 255.255.255.252\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface range FastEthernet0/1 - 2\n description 802.1Q trunk to ward switch\n switchport trunk encapsulation dot1q\n switchport mode trunk\n switchport trunk native vlan 998\n switchport trunk allowed vlan 10,31,32,99\n switchport nonegotiate\ninterface FastEthernet0/3\n description 802.1Q trunk to SW-ADMIN\n switchport trunk encapsulation dot1q\n switchport mode trunk\n switchport trunk native vlan 998\n switchport trunk allowed vlan 10,40,50,99\n switchport nonegotiate\ninterface GigabitEthernet0/2\n description Routed link to ASA-SRV G1/1 (outside)\n no switchport\n ip address 10.10.254.1 255.255.255.252\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface range FastEthernet0/4 - 24\n switchport mode access\n switchport access vlan 999\n shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "ip access-list extended STAFF-IN\n remark Staff: DHCP, DNS, EHR web, IoT dashboard, ping servers, Internet\n permit udp any any eq 67\n permit udp 10.10.10.0 0.0.0.255 host 10.10.20.11 eq 53\n permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.10 eq 80\n permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.10 eq 443\n permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.12 eq 80\n permit icmp 10.10.10.0 0.0.0.255 10.10.20.0 0.0.0.255 echo\n permit icmp 10.10.10.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply\n deny ip any 10.0.0.0 0.255.255.255\n permit ip 10.10.10.0 0.0.0.255 any\nip access-list extended MONITORS-IN\n remark Patient monitors: DHCP + IoT registration server only\n permit udp any any eq 67\n permit tcp 10.10.31.0 0.0.0.255 host 10.10.20.12 eq 80\n permit icmp 10.10.31.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply\n deny ip any any\nip access-list extended INFUSION-IN\n remark Infusion pumps: DHCP + IoT registration server only\n permit udp any any eq 67\n permit tcp 10.10.32.0 0.0.0.255 host 10.10.20.12 eq 80\n permit icmp 10.10.32.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply\n deny ip any any\nip access-list extended BLDGIOT-IN\n remark Building IoT: DHCP + IoT registration server only\n permit udp any any eq 67\n permit tcp 10.10.40.0 0.0.0.255 host 10.10.20.12 eq 80\n permit icmp 10.10.40.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply\n deny ip any any"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "ip access-list extended GUEST-IN\n remark Guests: DHCP, DNS, Internet. Never internal subnets\n permit udp any any eq 67\n permit udp 10.10.50.0 0.0.0.255 host 10.10.20.11 eq 53\n deny ip any 10.0.0.0 0.255.255.255\n permit ip 10.10.50.0 0.0.0.255 any\naccess-list 10 remark Management VLAN only\naccess-list 10 permit 10.10.99.0 0.0.0.255\ninterface Vlan1\n no ip address\n shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan10\n description STAFF gateway\n ip address 10.10.10.1 255.255.255.0\n ip helper-address 10.10.20.11\n ip access-group STAFF-IN in\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan31\n description MED-MONITORS gateway\n ip address 10.10.31.1 255.255.255.0\n ip helper-address 10.10.20.11\n ip access-group MONITORS-IN in\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan32\n description MED-INFUSION gateway\n ip address 10.10.32.1 255.255.255.0\n ip helper-address 10.10.20.11\n ip access-group INFUSION-IN in\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan40\n description BUILDING IoT gateway\n ip address 10.10.40.1 255.255.255.0\n ip helper-address 10.10.20.11\n ip access-group BLDGIOT-IN in\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan50\n description GUEST Wi-Fi gateway\n ip address 10.10.50.1 255.255.255.0\n ip helper-address 10.10.20.11\n ip access-group GUEST-IN in\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan99\n description MANAGEMENT gateway (trusted)\n ip address 10.10.99.1 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "ip route 10.10.20.0 255.255.255.0 10.10.254.2\nip route 0.0.0.0 0.0.0.0 10.10.255.1 250\nrouter ospf 1\n router-id 2.2.2.2\n passive-interface default\n no passive-interface GigabitEthernet0/1\n network 10.10.0.0 0.0.255.255 area 0\n redistribute static subnets\nntp server 10.10.20.13\nlogging host 10.10.20.13\nline console 0\n login local\n exec-timeout 5 0\nline vty 0 15\n access-class 10 in\n login local\n transport input ssh\n exec-timeout 5 0"
+ },
+ {
+  "device": "ASA-SRV",
+  "commands": "hostname ASA-SRV\nenable password Asa@2026\nno dhcpd enable inside\nno dhcpd address 192.168.1.5-192.168.1.36 inside\ninterface GigabitEthernet1/1\n nameif outside\n security-level 0\n ip address 10.10.254.2 255.255.255.252\n no shutdown"
+ },
+ {
+  "device": "ASA-SRV",
+  "commands": "interface GigabitEthernet1/2\n nameif inside\n security-level 100\n ip address 10.10.20.1 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "ASA-SRV",
+  "commands": "route outside 0.0.0.0 0.0.0.0 10.10.254.1\naccess-list OUTSIDE-IN extended permit tcp 10.10.10.0 255.255.255.0 host 10.10.20.10 eq 80\naccess-list OUTSIDE-IN extended permit tcp 10.10.10.0 255.255.255.0 host 10.10.20.10 eq 443\naccess-list OUTSIDE-IN extended permit tcp 10.10.10.0 255.255.255.0 host 10.10.20.12 eq 80\naccess-list OUTSIDE-IN extended permit tcp 10.10.31.0 255.255.255.0 host 10.10.20.12 eq 80\naccess-list OUTSIDE-IN extended permit tcp 10.10.32.0 255.255.255.0 host 10.10.20.12 eq 80\naccess-list OUTSIDE-IN extended permit tcp 10.10.40.0 255.255.255.0 host 10.10.20.12 eq 80\naccess-list OUTSIDE-IN extended permit udp 10.10.0.0 255.255.0.0 host 10.10.20.11 eq 67\naccess-list OUTSIDE-IN extended permit udp 10.10.10.0 255.255.255.0 host 10.10.20.11 eq 53\naccess-list OUTSIDE-IN extended permit udp 10.10.50.0 255.255.255.0 host 10.10.20.11 eq 53\naccess-list OUTSIDE-IN extended permit udp 10.10.254.0 255.255.255.252 host 10.10.20.13 eq 514\naccess-list OUTSIDE-IN extended permit udp 10.10.255.0 255.255.255.252 host 10.10.20.13 eq 514\naccess-list OUTSIDE-IN extended permit udp 10.10.254.0 255.255.255.252 host 10.10.20.13 eq 123\naccess-list OUTSIDE-IN extended permit udp 10.10.255.0 255.255.255.252 host 10.10.20.13 eq 123\naccess-list OUTSIDE-IN extended permit icmp 10.10.10.0 255.255.255.0 10.10.20.0 255.255.255.0 echo\naccess-list OUTSIDE-IN extended permit ip 10.10.99.0 255.255.255.0 10.10.20.0 255.255.255.0\naccess-list OUTSIDE-IN extended deny ip any any\naccess-group OUTSIDE-IN in interface outside\nclass-map inspection_default\n match default-inspection-traffic\npolicy-map global_policy\n class inspection_default\n  inspect icmp\nservice-policy global_policy global"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "hostname SW-WARD-A\nno ip domain-lookup\nenable secret WardA@2026\nservice password-encryption\nbanner motd ^Authorised access only. Activity is logged.^\nip domain-name hospital.local\nusername netadmin privilege 15 secret Adm1n@2026\ncrypto key generate rsa general-keys modulus 1024"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "ip ssh version 2\nvlan 10\n name STAFF\nvlan 31\n name MED-MONITORS\nvlan 32\n name MED-INFUSION\nvlan 99\n name MGMT\nvlan 998\n name NATIVE-UNUSED\nvlan 999\n name BLACKHOLE\nip dhcp snooping\nip dhcp snooping vlan 10,31,32\nno ip dhcp snooping information option\ninterface FastEthernet0/1\n description Nurse-PC-A (staff)\n switchport mode access\n switchport access vlan 10\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "interface FastEthernet0/2\n description Monitor-A1 (patient monitor)\n switchport mode access\n switchport access vlan 31\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable\ninterface FastEthernet0/3\n description Pump-A1 (infusion pump)\n switchport mode access\n switchport access vlan 32\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable\ninterface FastEthernet0/4\n description IOT-COMPROMISED test node - location 1 (Ward A monitors)\n switchport mode access\n switchport access vlan 31\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "interface FastEthernet0/5\n description Staff wall jack (rogue-DHCP test)\n switchport mode access\n switchport access vlan 10\n switchport port-security\n switchport port-security maximum 2\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable\ninterface range FastEthernet0/6 - 24, GigabitEthernet0/2\n description UNUSED - parked\n switchport mode access\n switchport access vlan 999\n shutdown"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "interface GigabitEthernet0/1\n description 802.1Q trunk to CORE-MLS Fa0/1\n switchport mode trunk\n switchport trunk native vlan 998\n switchport trunk allowed vlan 10,31,32,99\n switchport nonegotiate\n ip dhcp snooping trust\ninterface Vlan1\n no ip address\n shutdown"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "interface Vlan99\n description Management\n ip address 10.10.99.11 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "ip default-gateway 10.10.99.1\naccess-list 10 remark Management VLAN only\naccess-list 10 permit 10.10.99.0 0.0.0.255\nline console 0\n login local\n exec-timeout 5 0\nline vty 0 15\n access-class 10 in\n login local\n transport input ssh\n exec-timeout 5 0"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "hostname SW-WARD-B\nno ip domain-lookup\nenable secret WardB@2026\nservice password-encryption\nbanner motd ^Authorised access only. Activity is logged.^\nip domain-name hospital.local\nusername netadmin privilege 15 secret Adm1n@2026\ncrypto key generate rsa general-keys modulus 1024"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "ip ssh version 2\nvlan 10\n name STAFF\nvlan 31\n name MED-MONITORS\nvlan 32\n name MED-INFUSION\nvlan 99\n name MGMT\nvlan 998\n name NATIVE-UNUSED\nvlan 999\n name BLACKHOLE\nip dhcp snooping\nip dhcp snooping vlan 10,31,32\nno ip dhcp snooping information option\ninterface FastEthernet0/1\n description Nurse-PC-B (staff)\n switchport mode access\n switchport access vlan 10\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "interface FastEthernet0/2\n description Monitor-B1 (patient monitor)\n switchport mode access\n switchport access vlan 31\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable\ninterface FastEthernet0/3\n description Pump-B1 (infusion pump)\n switchport mode access\n switchport access vlan 32\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable\ninterface FastEthernet0/4\n description IOT-COMPROMISED test node - location 2 (Ward B monitors)\n switchport mode access\n switchport access vlan 31\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "interface FastEthernet0/5\n description Staff wall jack\n switchport mode access\n switchport access vlan 10\n switchport port-security\n switchport port-security maximum 2\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable\ninterface range FastEthernet0/6 - 24, GigabitEthernet0/2\n description UNUSED - parked\n switchport mode access\n switchport access vlan 999\n shutdown"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "interface GigabitEthernet0/1\n description 802.1Q trunk to CORE-MLS Fa0/2\n switchport mode trunk\n switchport trunk native vlan 998\n switchport trunk allowed vlan 10,31,32,99\n switchport nonegotiate\n ip dhcp snooping trust\ninterface Vlan1\n no ip address\n shutdown"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "interface Vlan99\n description Management\n ip address 10.10.99.12 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "ip default-gateway 10.10.99.1\naccess-list 10 remark Management VLAN only\naccess-list 10 permit 10.10.99.0 0.0.0.255\nline console 0\n login local\n exec-timeout 5 0\nline vty 0 15\n access-class 10 in\n login local\n transport input ssh\n exec-timeout 5 0"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "hostname SW-ADMIN\nno ip domain-lookup\nenable secret Admin@2026\nservice password-encryption\nbanner motd ^Authorised access only. Activity is logged.^\nip domain-name hospital.local\nusername netadmin privilege 15 secret Adm1n@2026\ncrypto key generate rsa general-keys modulus 1024"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "ip ssh version 2\nvlan 10\n name STAFF\nvlan 40\n name BLDG-IOT\nvlan 50\n name GUEST\nvlan 99\n name MGMT\nvlan 998\n name NATIVE-UNUSED\nvlan 999\n name BLACKHOLE\nip dhcp snooping\nip dhcp snooping vlan 10,40,50\nno ip dhcp snooping information option\ninterface FastEthernet0/1\n description Reception-PC (staff)\n switchport mode access\n switchport access vlan 10\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "interface FastEthernet0/2\n description NetAdmin-PC (management)\n switchport mode access\n switchport access vlan 99\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable\ninterface range FastEthernet0/3 - 7\n description Building IoT (door, fire, HVAC, webcam) + test node location 3\n switchport mode access\n switchport access vlan 40\n switchport port-security\n switchport port-security maximum 1\n switchport port-security mac-address sticky\n switchport port-security violation shutdown\n spanning-tree portfast\n spanning-tree bpduguard enable\ninterface FastEthernet0/8\n description Guest-AP (guest Wi-Fi)\n switchport mode access\n switchport access vlan 50\n switchport port-security\n switchport port-security maximum 10\n switchport port-security violation restrict\n spanning-tree portfast\n spanning-tree bpduguard enable"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "interface range FastEthernet0/9 - 24, GigabitEthernet0/2\n description UNUSED - parked\n switchport mode access\n switchport access vlan 999\n shutdown"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "interface GigabitEthernet0/1\n description 802.1Q trunk to CORE-MLS Fa0/3\n switchport mode trunk\n switchport trunk native vlan 998\n switchport trunk allowed vlan 10,40,50,99\n switchport nonegotiate\n ip dhcp snooping trust\ninterface Vlan1\n no ip address\n shutdown"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "interface Vlan99\n description Management\n ip address 10.10.99.13 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "ip default-gateway 10.10.99.1\naccess-list 10 remark Management VLAN only\naccess-list 10 permit 10.10.99.0 0.0.0.255\nline console 0\n login local\n exec-timeout 5 0\nline vty 0 15\n access-class 10 in\n login local\n transport input ssh\n exec-timeout 5 0"
+ }
+]

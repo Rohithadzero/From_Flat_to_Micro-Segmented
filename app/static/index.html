@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ward Containment Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="bar">
+  <div class="brand">
+    <span class="cross" aria-hidden="true"></span>
+    <div>
+      <h1>Ward Containment Lab</h1>
+      <p>Lateral-movement containment for a compromised medical IoT device, four network designs</p>
+    </div>
+  </div>
+  <div class="bar-status">
+    <span id="pt-pill" class="pill off" title="Packet Tracer plugin connection">Packet Tracer offline</span>
+    <span id="job-pill" class="pill quiet">No test running</span>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button role="tab" aria-selected="true" data-tab="map">Containment map</button>
+  <button role="tab" aria-selected="false" data-tab="results">Results</button>
+  <button role="tab" aria-selected="false" data-tab="configs">Configurations</button>
+  <button role="tab" aria-selected="false" data-tab="live">Live lab</button>
+  <button role="tab" aria-selected="false" data-tab="checks">Checks</button>
+</nav>
+
+<main>
+  <!-- CONTAINMENT MAP -->
+  <section id="tab-map" class="tab on" role="tabpanel">
+    <div class="corridor" id="corridor" role="radiogroup" aria-label="Network design"></div>
+
+    <div class="map-head">
+      <p id="design-summary" class="lede"></p>
+      <div class="controls">
+        <label>Test node
+          <select id="map-loc"></select>
+        </label>
+        <label>Evidence
+          <select id="map-source">
+            <option value="expected">Design analysis (expected)</option>
+            <option value="static">Policy analyzer (computed)</option>
+            <option value="observed">Packet Tracer (observed)</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <div id="map" class="map" aria-live="polite"></div>
+      <aside class="readout">
+        <div class="read"><b id="r-hosts">-</b><span>of 23 hosts answer the compromised device</span></div>
+        <div class="read"><b id="r-blocked">-</b><span>of 7 attacks fully blocked</span></div>
+        <div class="read"><b id="r-lines">-</b><span>configuration lines to get here</span></div>
+        <p id="map-note" class="note"></p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="tab-results" class="tab" role="tabpanel" hidden>
+    <h2>Attack outcomes</h2>
+    <p class="sub">Majority over locations and trials. Expected values come from the design analysis, computed values from the policy analyzer, observed values from Packet Tracer runs.</p>
+    <div id="matrices" class="matrices"></div>
+    <div class="legend"><span class="k s">Succeeded</span><span class="k p">Partial</span><span class="k b">Blocked</span><span class="k n">Not measured</span></div>
+
+    <h2>Attack surface</h2>
+    <div id="surface" class="bars"></div>
+
+    <h2>Hospital functions still working</h2>
+    <div id="functional" class="table-wrap"></div>
+
+    <h2>Configuration cost</h2>
+    <div id="complexity" class="bars"></div>
+    <div id="progress" class="sub"></div>
+  </section>
+
+  <!-- CONFIGS -->
+  <section id="tab-configs" class="tab" role="tabpanel" hidden>
+    <div class="controls row">
+      <label>Design <select id="cfg-design"></select></label>
+      <label>Device <select id="cfg-device"></select></label>
+      <label class="check"><input type="checkbox" id="cfg-diff"> Show changes from the previous design</label>
+    </div>
+    <pre id="cfg-view" class="code" tabindex="0"></pre>
+  </section>
+
+  <!-- LIVE -->
+  <section id="tab-live" class="tab" role="tabpanel" hidden>
+    <div class="live-grid">
+      <div>
+        <h2>Run tests in Packet Tracer</h2>
+        <p class="sub">The runner opens the design file, applies the GUI checklist (server services, DNS, DHCP pools, leases), runs the attacks and functional tests and writes what Packet Tracer returns into the results sheets.</p>
+        <form id="run-form" class="form">
+          <fieldset><legend>Designs</legend><div id="run-designs" class="chips"></div></fieldset>
+          <fieldset><legend>Tests</legend><div id="run-tests" class="chips"></div></fieldset>
+          <fieldset><legend>Test node locations</legend><div id="run-locs" class="chips"></div></fieldset>
+          <div class="row">
+            <label>Trials <input id="run-trials" type="number" min="1" max="5" value="3"></label>
+            <label class="check"><input type="checkbox" id="run-open" checked> Open the .pkt file first</label>
+            <label class="check"><input type="checkbox" id="run-prep" checked> Apply GUI checklist</label>
+            <label class="check"><input type="checkbox" id="run-save"> Save the .pkt after the checklist (backup kept)</label>
+          </div>
+          <div class="row">
+            <button type="submit" class="primary">Start test run</button>
+            <button type="button" id="prep-only">Apply checklist only</button>
+            <button type="button" id="stop-run" class="danger">Stop</button>
+          </div>
+        </form>
+        <h2>Quick command</h2>
+        <form id="quick" class="form row">
+          <label>Device <input id="q-dev" value="IOT-COMPROMISED"></label>
+          <label>Kind
+            <select id="q-kind">
+              <option value="pcCommand">Command prompt (ping, ipconfig, telnet)</option>
+              <option value="iosExec">IOS show command</option>
+              <option value="httpGet">Open URL in browser</option>
+              <option value="getHostIp">Read IP address</option>
+            </select>
+          </label>
+          <label class="grow">Command or URL <input id="q-cmd" value="ping 10.10.20.10"></label>
+          <button type="submit">Run</button>
+        </form>
+        <pre id="q-out" class="code small" tabindex="0">Results appear here.</pre>
+      </div>
+      <div>
+        <h2>Run log</h2>
+        <pre id="log" class="code log" tabindex="0">No run yet.</pre>
+        <h2>Recent Packet Tracer calls</h2>
+        <ol id="calls" class="calls"></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKS -->
+  <section id="tab-checks" class="tab" role="tabpanel" hidden>
+    <div class="live-grid">
+      <div>
+        <h2>Config test suite</h2>
+        <p class="sub">Lint rules and analyzer unit tests over the configuration files. No Packet Tracer needed.</p>
+        <button id="pytest" class="primary">Run test suite</button>
+        <pre id="pytest-out" class="code small" tabindex="0">Not run.</pre>
+      </div>
+      <div>
+        <h2>Record a manual observation</h2>
+        <p class="sub">For checks scripting cannot reach (IoT dashboard list F3, smoke-to-fan rule F8) or to correct a cell. Saved with a "manual" note.</p>
+        <form id="manual" class="form">
+          <div class="row">
+            <label>Sheet
+              <select id="m-csv"><option value="functional">Functional</option><option value="attack-matrix">Attack matrix</option></select>
+            </label>
+            <label>Test <input id="m-test" value="F3" size="4"></label>
+            <label>Design <select id="m-design"></select></label>
+          </div>
+          <div class="row">
+            <label>Location (attacks) <input id="m-loc" placeholder="L1-WardA-MedIoT"></label>
+            <label>Trial (attacks) <input id="m-trial" size="3" placeholder="1"></label>
+            <label>Observed
+              <select id="m-val"><option>PASS</option><option>FAIL</option><option>S</option><option>P</option><option>B</option></select>
+            </label>
+          </div>
+          <label class="grow">What you saw <input id="m-note" placeholder="All 8 devices listed on the dashboard"></label>
+          <button type="submit">Save observation</button>
+          <p id="m-res" class="sub"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+! =====================================================================
+! SW-WARD-A  (Cisco 2960-24TT)  -  D3 MICRO-SEGMENTATION
+! Added vs D1/D2:
+!  * medical IoT split: monitors VLAN 31, infusion pumps VLAN 32
+!  * port security (sticky MAC, shutdown on violation)
+!  * DHCP snooping (only the uplink may send DHCP offers)
+!  * PortFast + BPDU Guard on edge ports
+!  * hardened trunk (native 998, allowed list, DTP off)
+!  * unused ports shut and parked in VLAN 999
+!  * SSH-only management from VLAN 99
+! =====================================================================
+enable
+configure terminal
+hostname SW-WARD-A
+no ip domain-lookup
+enable secret WardA@2026
+service password-encryption
+banner motd ^Authorised access only. Activity is logged.^
+!
+ip domain-name hospital.local
+username netadmin privilege 15 secret Adm1n@2026
+crypto key generate rsa general-keys modulus 1024
+ip ssh version 2
+!
+vlan 10
+ name STAFF
+vlan 31
+ name MED-MONITORS
+vlan 32
+ name MED-INFUSION
+vlan 99
+ name MGMT
+vlan 998
+ name NATIVE-UNUSED
+vlan 999
+ name BLACKHOLE
+!
+! ---- DHCP snooping: offers are only accepted from trusted ports ----
+ip dhcp snooping
+ip dhcp snooping vlan 10,31,32
+no ip dhcp snooping information option
+!
+interface FastEthernet0/1
+ description Nurse-PC-A (staff)
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+interface FastEthernet0/2
+ description Monitor-A1 (patient monitor)
+ switchport mode access
+ switchport access vlan 31
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+interface FastEthernet0/3
+ description Pump-A1 (infusion pump)
+ switchport mode access
+ switchport access vlan 32
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+interface FastEthernet0/4
+ description IOT-COMPROMISED test node - location 1 (Ward A monitors)
+ switchport mode access
+ switchport access vlan 31
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+interface FastEthernet0/5
+ description Staff wall jack (rogue-DHCP test)
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface range FastEthernet0/6 - 24, GigabitEthernet0/2
+ description UNUSED - parked
+ switchport mode access
+ switchport access vlan 999
+ shutdown
+!
+interface GigabitEthernet0/1
+ description 802.1Q trunk to CORE-MLS Fa0/1
+ switchport mode trunk
+ switchport trunk native vlan 998
+ switchport trunk allowed vlan 10,31,32,99
+ switchport nonegotiate
+ ip dhcp snooping trust
+!
+interface Vlan1
+ no ip address
+ shutdown
+interface Vlan99
+ description Management
+ ip address 10.10.99.11 255.255.255.0
+ no shutdown
+ip default-gateway 10.10.99.1
+!
+access-list 10 remark Management VLAN only
+access-list 10 permit 10.10.99.0 0.0.0.255
+!
+line console 0
+ login local
+ exec-timeout 5 0
+line vty 0 15
+ access-class 10 in
+ login local
+ transport input ssh
+ exec-timeout 5 0
+end
+write memory

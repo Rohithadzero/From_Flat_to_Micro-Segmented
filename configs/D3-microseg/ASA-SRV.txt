@@ -1,0 +1,73 @@
+! =====================================================================
+! ASA-SRV  (Cisco ASA 5506-X)  -  D3 only
+! Stateful firewall in front of the clinical-server zone.
+!   G1/1  "outside"  security-level 0    10.10.254.2/30  -> CORE-MLS G0/2
+!   G1/2  "inside"   security-level 100  10.10.20.1/24   -> SW-SRV G0/1
+! Rules of the ASA:
+!   * higher -> lower security level is allowed by default (servers can
+!     answer and the replies are tracked statefully)
+!   * lower -> higher is DENIED unless an access-list permits it
+!     (that is what OUTSIDE-IN below does, one line per real need)
+!
+! PT NOTE: the ASA ships with a default DHCP pool on "inside"
+! (192.168.1.x). Remove it first, or the new inside IP is rejected.
+! In PT the ASA prompt is "ciscoasa>"; the default enable password is
+! empty (just press Enter).
+! =====================================================================
+enable
+configure terminal
+hostname ASA-SRV
+enable password Asa@2026
+!
+! ---- remove the factory DHCP server on inside ----
+no dhcpd enable inside
+no dhcpd address 192.168.1.5-192.168.1.36 inside
+!
+interface GigabitEthernet1/1
+ nameif outside
+ security-level 0
+ ip address 10.10.254.2 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet1/2
+ nameif inside
+ security-level 100
+ ip address 10.10.20.1 255.255.255.0
+ no shutdown
+!
+! ---- everything not in the server zone is reached via the core ----
+route outside 0.0.0.0 0.0.0.0 10.10.254.1
+!
+! =====================================================================
+! OUTSIDE-IN: what the campus may open towards the servers
+! (second layer of defence behind the core ACLs = defence in depth)
+! ASA ACLs use SUBNET MASKS, not wildcard masks like IOS.
+! =====================================================================
+access-list OUTSIDE-IN extended permit tcp 10.10.10.0 255.255.255.0 host 10.10.20.10 eq 80
+access-list OUTSIDE-IN extended permit tcp 10.10.10.0 255.255.255.0 host 10.10.20.10 eq 443
+access-list OUTSIDE-IN extended permit tcp 10.10.10.0 255.255.255.0 host 10.10.20.12 eq 80
+access-list OUTSIDE-IN extended permit tcp 10.10.31.0 255.255.255.0 host 10.10.20.12 eq 80
+access-list OUTSIDE-IN extended permit tcp 10.10.32.0 255.255.255.0 host 10.10.20.12 eq 80
+access-list OUTSIDE-IN extended permit tcp 10.10.40.0 255.255.255.0 host 10.10.20.12 eq 80
+access-list OUTSIDE-IN extended permit udp 10.10.0.0 255.255.0.0 host 10.10.20.11 eq 67
+access-list OUTSIDE-IN extended permit udp 10.10.10.0 255.255.255.0 host 10.10.20.11 eq 53
+access-list OUTSIDE-IN extended permit udp 10.10.50.0 255.255.255.0 host 10.10.20.11 eq 53
+access-list OUTSIDE-IN extended permit udp 10.10.254.0 255.255.255.252 host 10.10.20.13 eq 514
+access-list OUTSIDE-IN extended permit udp 10.10.255.0 255.255.255.252 host 10.10.20.13 eq 514
+access-list OUTSIDE-IN extended permit udp 10.10.254.0 255.255.255.252 host 10.10.20.13 eq 123
+access-list OUTSIDE-IN extended permit udp 10.10.255.0 255.255.255.252 host 10.10.20.13 eq 123
+access-list OUTSIDE-IN extended permit icmp 10.10.10.0 255.255.255.0 10.10.20.0 255.255.255.0 echo
+access-list OUTSIDE-IN extended permit ip 10.10.99.0 255.255.255.0 10.10.20.0 255.255.255.0
+access-list OUTSIDE-IN extended deny ip any any
+access-group OUTSIDE-IN in interface outside
+!
+! ---- Stateful ICMP: let echo-replies back in for permitted pings ----
+class-map inspection_default
+ match default-inspection-traffic
+policy-map global_policy
+ class inspection_default
+  inspect icmp
+service-policy global_policy global
+!
+end
+write memory

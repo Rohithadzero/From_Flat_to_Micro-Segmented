@@ -1,0 +1,11 @@
+% Abstract. Configuration numbers are measured; attack outcomes switch from
+% "predicted" to "measured" wording through \ifmeasured (see main.tex).
+% IEEE template rule: no symbols, special characters, footnotes or math in the
+% abstract (hence "percent", not \%).
+\begin{abstract}
+Medical Internet-of-Things (IoMT) devices often run software that cannot be patched, so the hospital network itself must keep a compromised device away from patient records and infrastructure. We build one smart-hospital network in Cisco Packet Tracer and save it as four designs that differ only in security policy: a flat LAN (D0), role-based VLANs (D1), zone ACLs on the core switch (D2), and least-privilege micro-segmentation with a stateful firewall and Layer-2 hardening (D3). Eight attacks mapped to MITRE ATT\&CK, among them a rogue switch, are run from three locations. They are paired with an automated detect-and-quarantine test and nine functional tests, all driven through Packet Tracer's scripting interface by a purpose-built gateway. Before deployment, a static reachability analyser and a configuration review found that a zone permit silently includes a router's own interface address. This left the management planes of the core switch and edge router open to IoT and guest devices, a misconfiguration class the test plan did not probe. The fixes cost \fixDeltaDtwo{} lines in D2 and \fixDeltaDthree{} in D3. From D0 to D3, configuration grows from \cfgLinesDzero{} to \cfgLinesDthree{} lines and from \acesDzero{} to \acesDthree{} access-control entries. \ifmeasured The measurements show \else Design analysis predicts\expnote{} \fi that VLANs alone block none of the seven core attacks, zone ACLs block \blockedDtwo{}, and micro-segmentation blocks \blockedDthree{} and leaves \partialDthree{} partial, while hosts reachable from the compromised node fall from \hostsPctDzero{} to \hostsPctDthree{} percent. What remains open in D3 is same-VLAN traffic and the one service each device class must keep.
+\end{abstract}
+
+\begin{IEEEkeywords}
+IoMT, micro-segmentation, lateral movement, access control lists, zero trust, configuration verification, smart hospital, Packet Tracer
+\end{IEEEkeywords}

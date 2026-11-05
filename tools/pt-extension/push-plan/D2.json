@@ -1,0 +1,34 @@
+[
+ {
+  "device": "CORE-MLS",
+  "commands": "hostname CORE-MLS\nno ip domain-lookup\nenable secret cisco\nservice timestamps log datetime msec\nip routing\nvlan 10\n name STAFF\nvlan 20\n name SERVERS\nvlan 30\n name MED-IOT\nvlan 40\n name BLDG-IOT\nvlan 50\n name GUEST\nvlan 99\n name MGMT\ninterface GigabitEthernet0/1\n description Routed link to EDGE-RTR G0/1\n no switchport\n ip address 10.10.255.2 255.255.255.252\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface range FastEthernet0/1 - 3\n description 802.1Q trunk to access switch\n switchport trunk encapsulation dot1q\n switchport mode trunk\ninterface GigabitEthernet0/2\n description To SW-SRV G0/1 (server VLAN 20)\n switchport mode access\n switchport access vlan 20\nip access-list extended MEDIOT-IN\n remark Medical IoT -> server zone only\n permit udp any any eq 67\n permit ip 10.10.30.0 0.0.0.255 10.10.20.0 0.0.0.255\n deny ip any any\nip access-list extended BLDGIOT-IN\n remark Building IoT -> server zone only\n permit udp any any eq 67\n permit ip 10.10.40.0 0.0.0.255 10.10.20.0 0.0.0.255\n deny ip any any\nip access-list extended GUEST-IN\n remark Guests -> DHCP, DNS, Internet. Never internal subnets\n permit udp any any eq 67\n permit udp 10.10.50.0 0.0.0.255 host 10.10.20.11 eq 53\n deny ip any 10.0.0.0 0.255.255.255\n permit ip 10.10.50.0 0.0.0.255 any\ninterface Vlan10\n description STAFF gateway (unfiltered)\n ip address 10.10.10.1 255.255.255.0\n ip helper-address 10.10.20.11\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan20\n description SERVERS gateway\n ip address 10.10.20.1 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan30\n description MEDICAL IoT gateway\n ip address 10.10.30.1 255.255.255.0\n ip helper-address 10.10.20.11\n ip access-group MEDIOT-IN in\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan40\n description BUILDING IoT gateway\n ip address 10.10.40.1 255.255.255.0\n ip helper-address 10.10.20.11\n ip access-group BLDGIOT-IN in\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan50\n description GUEST Wi-Fi gateway\n ip address 10.10.50.1 255.255.255.0\n ip helper-address 10.10.20.11\n ip access-group GUEST-IN in\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan99\n description MANAGEMENT gateway (unfiltered)\n ip address 10.10.99.1 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "ip route 0.0.0.0 0.0.0.0 10.10.255.1 250\nrouter ospf 1\n router-id 2.2.2.2\n passive-interface default\n no passive-interface GigabitEthernet0/1\n network 10.10.0.0 0.0.255.255 area 0\nntp server 10.10.20.13\nlogging host 10.10.20.13\nline console 0\n password cisco\n login\nline vty 0 15\n password cisco\n login\n transport input telnet"
+ }
+]

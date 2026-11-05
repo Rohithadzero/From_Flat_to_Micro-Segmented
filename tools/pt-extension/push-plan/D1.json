@@ -1,0 +1,90 @@
+[
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan1\n no ip address\n shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "router ospf 1\n no passive-interface Vlan1"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "hostname CORE-MLS\nno ip domain-lookup\nenable secret cisco\nservice timestamps log datetime msec\nip routing\nvlan 10\n name STAFF\nvlan 20\n name SERVERS\nvlan 30\n name MED-IOT\nvlan 40\n name BLDG-IOT\nvlan 50\n name GUEST\nvlan 99\n name MGMT\ninterface GigabitEthernet0/1\n description Routed link to EDGE-RTR G0/1\n no switchport\n ip address 10.10.255.2 255.255.255.252\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface range FastEthernet0/1 - 3\n description 802.1Q trunk to access switch\n switchport trunk encapsulation dot1q\n switchport mode trunk\ninterface GigabitEthernet0/2\n description To SW-SRV G0/1 (server VLAN 20)\n switchport mode access\n switchport access vlan 20\ninterface Vlan10\n description STAFF gateway\n ip address 10.10.10.1 255.255.255.0\n ip helper-address 10.10.20.11\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan20\n description SERVERS gateway\n ip address 10.10.20.1 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan30\n description MEDICAL IoT gateway\n ip address 10.10.30.1 255.255.255.0\n ip helper-address 10.10.20.11\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan40\n description BUILDING IoT gateway\n ip address 10.10.40.1 255.255.255.0\n ip helper-address 10.10.20.11\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan50\n description GUEST Wi-Fi gateway\n ip address 10.10.50.1 255.255.255.0\n ip helper-address 10.10.20.11\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "interface Vlan99\n description MANAGEMENT gateway\n ip address 10.10.99.1 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "CORE-MLS",
+  "commands": "ip route 0.0.0.0 0.0.0.0 10.10.255.1 250\nrouter ospf 1\n router-id 2.2.2.2\n passive-interface default\n no passive-interface GigabitEthernet0/1\n network 10.10.0.0 0.0.255.255 area 0\nntp server 10.10.20.13\nlogging host 10.10.20.13\nline console 0\n password cisco\n login\nline vty 0 15\n password cisco\n login\n transport input telnet"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "hostname SW-WARD-A\nno ip domain-lookup\nenable secret cisco\nvlan 10\n name STAFF\nvlan 30\n name MED-IOT\nvlan 99\n name MGMT\ninterface FastEthernet0/1\n description Nurse-PC-A (staff)\n switchport mode access\n switchport access vlan 10\ninterface FastEthernet0/2\n description Monitor-A1 (patient monitor)\n switchport mode access\n switchport access vlan 30\ninterface FastEthernet0/3\n description Pump-A1 (infusion pump)\n switchport mode access\n switchport access vlan 30\ninterface FastEthernet0/4\n description IOT-COMPROMISED test node - location 1 (Ward A)\n switchport mode access\n switchport access vlan 30\ninterface FastEthernet0/5\n description Staff wall jack (used for rogue-DHCP test)\n switchport mode access\n switchport access vlan 10"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "interface GigabitEthernet0/1\n description 802.1Q trunk to CORE-MLS Fa0/1\n switchport mode trunk\ninterface Vlan1\n no ip address\n shutdown"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "interface Vlan99\n description Management\n ip address 10.10.99.11 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "SW-WARD-A",
+  "commands": "ip default-gateway 10.10.99.1\nline console 0\n password cisco\n login\nline vty 0 15\n password cisco\n login\n transport input telnet"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "hostname SW-WARD-B\nno ip domain-lookup\nenable secret cisco\nvlan 10\n name STAFF\nvlan 30\n name MED-IOT\nvlan 99\n name MGMT\ninterface FastEthernet0/1\n description Nurse-PC-B (staff)\n switchport mode access\n switchport access vlan 10\ninterface FastEthernet0/2\n description Monitor-B1 (patient monitor)\n switchport mode access\n switchport access vlan 30\ninterface FastEthernet0/3\n description Pump-B1 (infusion pump)\n switchport mode access\n switchport access vlan 30\ninterface FastEthernet0/4\n description IOT-COMPROMISED test node - location 2 (Ward B)\n switchport mode access\n switchport access vlan 30\ninterface FastEthernet0/5\n description Staff wall jack\n switchport mode access\n switchport access vlan 10"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "interface GigabitEthernet0/1\n description 802.1Q trunk to CORE-MLS Fa0/2\n switchport mode trunk\ninterface Vlan1\n no ip address\n shutdown"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "interface Vlan99\n description Management\n ip address 10.10.99.12 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "SW-WARD-B",
+  "commands": "ip default-gateway 10.10.99.1\nline console 0\n password cisco\n login\nline vty 0 15\n password cisco\n login\n transport input telnet"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "hostname SW-ADMIN\nno ip domain-lookup\nenable secret cisco\nvlan 10\n name STAFF\nvlan 40\n name BLDG-IOT\nvlan 50\n name GUEST\nvlan 99\n name MGMT\ninterface FastEthernet0/1\n description Reception-PC (staff)\n switchport mode access\n switchport access vlan 10\ninterface FastEthernet0/2\n description NetAdmin-PC (management)\n switchport mode access\n switchport access vlan 99\ninterface range FastEthernet0/3 - 6\n description Building IoT (door, fire monitor, HVAC fan, webcam)\n switchport mode access\n switchport access vlan 40\ninterface FastEthernet0/7\n description IOT-COMPROMISED test node - location 3 (building IoT)\n switchport mode access\n switchport access vlan 40"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "interface FastEthernet0/8\n description Guest-AP (guest Wi-Fi)\n switchport mode access\n switchport access vlan 50\ninterface GigabitEthernet0/1\n description 802.1Q trunk to CORE-MLS Fa0/3\n switchport mode trunk\ninterface Vlan1\n no ip address\n shutdown"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "interface Vlan99\n description Management\n ip address 10.10.99.13 255.255.255.0\n no shutdown"
+ },
+ {
+  "device": "SW-ADMIN",
+  "commands": "ip default-gateway 10.10.99.1\nline console 0\n password cisco\n login\nline vty 0 15\n password cisco\n login\n transport input telnet"
+ }
+]

@@ -1,0 +1,15 @@
+% =====================================================================
+\section{Limitations and Residual Risks}
+\label{sec:limits}
+% =====================================================================
+
+\textbf{Simulator and attacker.} Packet Tracer~\cite{packettracer} implements a subset of IOS and ASA behaviour. It has no exploit tools, and its end devices cannot craft frames, so double tagging, ARP spoofing and DHCP starvation cannot be tested. Timing is approximate and throughput cannot be measured. A laptop stands in for the compromised device: it is equivalent at the network layer, but it does not model a compromise of the medical application. The analyser assumes, and the live runs must confirm, that inbound SVI ACLs also filter traffic addressed to the switch itself and that IoT registration uses TCP~80.
+
+\textbf{Scope.} The testbed has one site, 23 target hosts and one attacker at a time. Absolute percentages therefore do not carry over to a large hospital; the ordering of the designs is the result we expect to generalise. A1 counts hosts by ICMP, so a host that serves TCP but drops ICMP, such as the registration server in D3, appears only in the service count. \ifmeasured\else The attack, surface, functional and metric values are expected outcomes until the Packet Tracer runs are recorded.\fi
+
+\textbf{Residual risks in D3.} Beyond the fixed defects, the configuration review recorded five open risks (\texttt{tests/FINDINGS.md}, ``ECC network-config-reviewer pass''):
+(a) Same-VLAN traffic: two monitors in VLAN~31 still reach each other at Layer~2. This is the source of D3's partial A1 and A3.
+(b) H-2: the registration server, the one server every IoT class may reach, shares the ASA's inside segment with the EHR. An exploit of that server would land one hop from patient records.
+(c) M-1: the EHR also listens on TCP~80, and IoT registration is HTTP only, so health data can cross the network in cleartext.
+(d) M-2: deny ACEs carry no \cfg{log} keyword, and the access switches send no Syslog. Port-security and BPDU Guard events therefore never reach the Syslog server; Q1 relies on ACL counters instead.
+(e) M-3: without Dynamic ARP Inspection, a device can spoof its VLAN's gateway.

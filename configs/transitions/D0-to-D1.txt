@@ -1,0 +1,14 @@
+! =====================================================================
+! TRANSITION D0 -> D1  (paste BEFORE the D1 config files)
+! Only needed when you upgrade the saved D0 file instead of building
+! D1 from scratch. Removes D0 leftovers that would clash with D1.
+! =====================================================================
+! ---- CORE-MLS: the flat /17 on Vlan1 overlaps every D1 SVI subnet ----
+!@CORE-MLS
+interface Vlan1
+ no ip address
+ shutdown
+!@CORE-MLS
+router ospf 1
+ no passive-interface Vlan1
+! (access switches: their D1 files already clear Vlan1 before Vlan99)

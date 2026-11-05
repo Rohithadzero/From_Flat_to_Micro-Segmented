@@ -1,0 +1,333 @@
+% refs.bib -- IEEE paper bibliography
+%
+% Section 1 (below): standards and vendor documents verified by the paper
+% agent on 2026-11-04. Every DOI was resolved through https://doi.org and
+% its title/authors checked against Crossref or the publisher page; the
+% Cisco and NetAcad URLs were fetched and returned the named document.
+%
+% Section 2 (further down, if present): literature merged from
+% research/papers/refs.bib (collected and verified by the research agent).
+% Do NOT add entries that nobody has read or verified.
+
+% ---------------------------------------------------------------- standards
+@techreport{nist80027,
+  author      = {Scott Rose and Oliver Borchert and Stu Mitchell and Sean Connelly},
+  title       = {Zero Trust Architecture},
+  institution = {National Institute of Standards and Technology},
+  type        = {NIST Special Publication},
+  number      = {800-207},
+  address     = {Gaithersburg, MD, USA},
+  month       = aug,
+  year        = {2020},
+  doi         = {10.6028/NIST.SP.800-207},
+  url         = {https://doi.org/10.6028/NIST.SP.800-207}
+}
+
+@misc{ieee8021q,
+  key          = {IEEE 802.1Q},
+  author       = {{IEEE}},
+  title        = {{IEEE} Standard for Local and Metropolitan Area Networks--Bridges and Bridged Networks},
+  howpublished = {IEEE Std 802.1Q-2018},
+  month        = jul,
+  year         = {2018},
+  doi          = {10.1109/IEEESTD.2018.8403927},
+  url          = {https://doi.org/10.1109/IEEESTD.2018.8403927}
+}
+
+@misc{ieee8021x,
+  key          = {IEEE 802.1X},
+  author       = {{IEEE}},
+  title        = {{IEEE} Standard for Local and Metropolitan Area Networks--Port-Based Network Access Control},
+  howpublished = {IEEE Std 802.1X-2020},
+  year         = {2020},
+  doi          = {10.1109/IEEESTD.2020.9018454},
+  url          = {https://doi.org/10.1109/IEEESTD.2020.9018454}
+}
+
+@misc{rfc1918,
+  author       = {Y. Rekhter and B. Moskowitz and D. Karrenberg and G. J. de Groot and E. Lear},
+  title        = {Address Allocation for Private Internets},
+  howpublished = {RFC 1918, BCP 5},
+  publisher    = {IETF},
+  month        = feb,
+  year         = {1996},
+  doi          = {10.17487/RFC1918},
+  url          = {https://doi.org/10.17487/RFC1918}
+}
+
+@misc{rfc2131,
+  author       = {R. Droms},
+  title        = {Dynamic Host Configuration Protocol},
+  howpublished = {RFC 2131},
+  publisher    = {IETF},
+  month        = mar,
+  year         = {1997},
+  doi          = {10.17487/RFC2131},
+  url          = {https://doi.org/10.17487/RFC2131}
+}
+
+@misc{rfc2328,
+  author       = {J. Moy},
+  title        = {{OSPF} Version 2},
+  howpublished = {RFC 2328, STD 54},
+  publisher    = {IETF},
+  month        = apr,
+  year         = {1998},
+  doi          = {10.17487/RFC2328},
+  url          = {https://doi.org/10.17487/RFC2328}
+}
+
+@misc{rfc3022,
+  author       = {P. Srisuresh and K. Egevang},
+  title        = {Traditional {IP} Network Address Translator (Traditional {NAT})},
+  howpublished = {RFC 3022},
+  publisher    = {IETF},
+  month        = jan,
+  year         = {2001},
+  doi          = {10.17487/RFC3022},
+  url          = {https://doi.org/10.17487/RFC3022}
+}
+
+@misc{rfc3046,
+  author       = {M. Patrick},
+  title        = {{DHCP} Relay Agent Information Option},
+  howpublished = {RFC 3046},
+  publisher    = {IETF},
+  month        = jan,
+  year         = {2001},
+  doi          = {10.17487/RFC3046},
+  url          = {https://doi.org/10.17487/RFC3046}
+}
+
+@misc{rfc4253,
+  author       = {T. Ylonen and C. Lonvick},
+  title        = {The Secure Shell ({SSH}) Transport Layer Protocol},
+  howpublished = {RFC 4253},
+  publisher    = {IETF},
+  month        = jan,
+  year         = {2006},
+  doi          = {10.17487/RFC4253},
+  url          = {https://doi.org/10.17487/RFC4253}
+}
+
+@misc{rfc5424,
+  author       = {R. Gerhards},
+  title        = {The Syslog Protocol},
+  howpublished = {RFC 5424},
+  publisher    = {IETF},
+  month        = mar,
+  year         = {2009},
+  doi          = {10.17487/RFC5424},
+  url          = {https://doi.org/10.17487/RFC5424}
+}
+
+@misc{rfc5905,
+  author       = {D. Mills and J. Martin and J. Burbank and W. Kasch},
+  title        = {Network Time Protocol Version 4: Protocol and Algorithms Specification},
+  howpublished = {RFC 5905},
+  publisher    = {IETF},
+  month        = jun,
+  year         = {2010},
+  doi          = {10.17487/RFC5905},
+  url          = {https://doi.org/10.17487/RFC5905}
+}
+
+@misc{rfc5517,
+  author       = {S. HomChaudhuri and M. Foschiano},
+  title        = {Cisco Systems' Private {VLANs}: Scalable Security in a Multi-Client Environment},
+  howpublished = {RFC 5517 (Informational)},
+  publisher    = {IETF},
+  month        = feb,
+  year         = {2010},
+  doi          = {10.17487/RFC5517},
+  url          = {https://doi.org/10.17487/RFC5517}
+}
+
+% ---------------------------------------------------------------- vendor documentation
+@manual{ciscoasa922,
+  organization = {{Cisco Systems}},
+  title        = {{CLI} Book 2: Cisco Secure Firewall {ASA} Firewall {CLI} Configuration Guide, 9.22 -- Access Rules},
+  year         = {2024},
+  note         = {Accessed: Nov. 4, 2026},
+  url          = {https://www.cisco.com/c/en/us/td/docs/security/asa/asa922/configuration/firewall/asa-922-firewall-config/access-rules.html}
+}
+% TODO(authors): the year above is the 9.22 release train; confirm the
+% "Updated:" date shown on the Cisco page when you finalise the paper.
+
+@misc{packettracer,
+  author       = {{Cisco Networking Academy}},
+  title        = {Cisco Packet Tracer},
+  howpublished = {Network simulation tool},
+  note         = {Version 9.0.1 used in this study. Accessed: Nov. 4, 2026},
+  url          = {https://www.netacad.com/cisco-packet-tracer}
+}
+
+% Technique IDs T1018, T1046, T1213, T1021.004, T1557.003, T1200, T1599 were
+% each checked on attack.mitre.org on 2026-11-04.
+@misc{mitreattack,
+  author       = {{The MITRE Corporation}},
+  title        = {{MITRE ATT\&CK} -- Enterprise Matrix},
+  howpublished = {Knowledge base of adversary tactics and techniques},
+  note         = {Accessed: Nov. 4, 2026},
+  url          = {https://attack.mitre.org/}
+}
+
+% ==== BEGIN merged from research/papers/refs.bib (auto, do not edit here) ====
+% Source: research/papers/refs.bib; summaries in research/papers/INDEX.md
+
+@article{Tyler2021TrustNo, title={Trust No One? A Framework for Assisting Healthcare Organisations in Transitioning to a Zero-Trust Network Architecture}, volume={11}, ISSN={2076-3417}, url={http://dx.doi.org/10.3390/app11167499}, DOI={10.3390/app11167499}, number={16}, journal={Applied Sciences}, publisher={MDPI AG}, author={Tyler, Dan and Viana, Thiago}, year={2021}, month=aug, pages={7499} }
+
+@article{Chen2020SecurityAwareness, title={A Security Awareness and Protection System for 5G Smart Healthcare Based on Zero-Trust Architecture}, volume={8}, ISSN={2372-2541}, url={http://dx.doi.org/10.1109/jiot.2020.3041042}, DOI={10.1109/jiot.2020.3041042}, number={13}, journal={IEEE Internet of Things Journal}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Chen, Baozhan and Qiao, Siyuan and Zhao, Jie and Liu, Dongqing and Shi, Xiaobing and Lyu, Minzhao and Chen, Haotian and Lu, Huimin and Zhai, Yunkai}, year={2021}, month=jul, pages={10248--10263} }
+
+@misc{Allouzi2024EnablingZero,
+  doi = {10.48550/ARXIV.2402.10389},
+  url = {https://arxiv.org/abs/2402.10389},
+  author={Allouzi, Maha Ali and Khan, Javed},
+  keywords={Cryptography and Security (cs.CR), Computers and Society (cs.CY), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title={Enabling Zero Trust Security in IoMT Edge Network},
+  publisher={arXiv},
+  year={2024},
+  copyright={Creative Commons Attribution 4.0 International}
+}
+
+@article{Wang2023ResearchMedical, title={Research on Medical Security System Based on Zero Trust}, volume={23}, ISSN={1424-8220}, url={http://dx.doi.org/10.3390/s23073774}, DOI={10.3390/s23073774}, number={7}, journal={Sensors}, publisher={MDPI AG}, author={Wang, Zhiqiang and Yu, Xinyue and Xue, Peiyang and Qu, Yunhan and Ju, Lei}, year={2023}, month=apr, pages={3774} }
+
+@article{GosalvezWhite2025Mediotwall, title={MEDIotWALL: Securing Smart Healthcare Environments Through IoT Firewalls}, volume={25}, ISSN={1424-8220}, url={http://dx.doi.org/10.3390/s25196235}, DOI={10.3390/s25196235}, number={19}, journal={Sensors}, publisher={MDPI AG}, author={Gosálvez-White, Irene and Rodríguez-Martín, Nerea and Barajas-García, Nicolás and Mena-Gallardo, Carmen and García-Teodoro, Pedro}, year={2025}, month=oct, pages={6235} }
+
+@article{Sifawa2026ImplementationEvaluation,
+  author={Ismail Mahmoud Sifawa and M.O. Adenomon and M.I. Umar},
+  title={Implementation and Evaluation of Network-Level Zero Trust Controls for Enterprise Network Security Using Cisco Packet Tracer},
+  journal={Science World Journal},
+  year={2026},
+  volume={21},
+  number={3},
+  url = {https://scienceworldjournal.org/article/view/24917}
+}
+
+@article{Hari2026ThreeTier, title={A three-tier microsegmentation framework for enterprise networks under Zero Trust Architecture}, volume={141}, ISSN={1110-0168}, url={http://dx.doi.org/10.1016/j.aej.2026.03.014}, DOI={10.1016/j.aej.2026.03.014}, journal={Alexandria Engineering Journal}, publisher={Elsevier BV}, author={N.N., Hari and Krishnan, Prabhakar and Jain, Kurunandan and Saudagar, Abdul Khader Jilani and P., Prabu and Poonia, Ramesh Chandra}, year={2026}, month=apr, pages={150--164} }
+
+@article{Odule2026SimulationValidation, title={Simulation-Based Validation of a Low-Cost Open-Source Micro-Segmentation Framework for Zero-Trust Lite Implementation in SMEs: Efficacy, Overhead, and Practical Considerations}, volume={35}, ISSN={1595-0611}, url={http://dx.doi.org/10.62292/njp.v35i3.2026.566}, DOI={10.62292/njp.v35i3.2026.566}, number={3}, journal={Nigerian Journal of Physics}, publisher={Nigerian Institute of Physics}, author={Odule, Tola John and Abdullah, Khadijat-Kubrat Adebisi and Ayo, Femi E. and Adetona, Basit A. and Giwa, Oluwakemi Rukayat}, year={2026}, month=jun, pages={145--156} }
+
+@misc{Gambo2026ExplainableFederated,
+  doi = {10.48550/ARXIV.2603.24754},
+  url = {https://arxiv.org/abs/2603.24754},
+  author={Gambo, Muhammad Liman and Almulhem, Ahmad},
+  keywords={Cryptography and Security (cs.CR), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title={An Explainable Federated Framework for Zero Trust Micro-Segmentation in IIoT Networks},
+  publisher={arXiv},
+  year={2026},
+  copyright={Creative Commons Attribution 4.0 International}
+}
+
+@misc{Dube2026WhyNetwork,
+  doi = {10.48550/ARXIV.2604.08632},
+  url = {https://arxiv.org/abs/2604.08632},
+  author={Dube, Rohit},
+  keywords={Cryptography and Security (cs.CR), Networking and Internet Architecture (cs.NI), Applications (stat.AP), FOS: Computer and information sciences},
+  title={Why Network Segmentation Projects Fail},
+  publisher={arXiv},
+  year={2026},
+  copyright={arXiv.org perpetual, non-exclusive license}
+}
+
+@misc{Raval2026ImplementationDynamic,
+  doi = {10.48550/ARXIV.2610.30102},
+  url = {https://arxiv.org/abs/2610.30102},
+  author={Raval, Vishwam and Kim, Jaewon and Pattabhi, Ravi and Roy, Sandip},
+  keywords={Systems and Control (eess.SY), Multiagent Systems (cs.MA), Networking and Internet Architecture (cs.NI), Robotics (cs.RO), FOS: Electrical engineering, electronic engineering, information engineering, FOS: Computer and information sciences},
+  title={Implementation of Dynamic Microsegmentation for a Multi-Robot Network},
+  publisher={arXiv},
+  year={2026},
+  copyright={arXiv.org perpetual, non-exclusive license}
+}
+
+@article{Jassim2024SmartHospital, title={Smart Hospital Network Enterprise Design for Medicine City Hospital via Packet Tracer}, volume={15}, ISSN={2706-7440}, url={http://dx.doi.org/10.37649/aengs.2024.144601.1065}, DOI={10.37649/aengs.2024.144601.1065}, number={1}, journal={Anbar Journal of Engineering Sciences}, publisher={University of Anbar}, author={Jassim, mohammed}, year={2024}, month=may, pages={77--90} }
+
+@inbook{Dalal2026AdaptiveTraffic, title={Adaptive Traffic Segregation and Simulation in Software-Defined Healthcare Networks}, ISBN={9789462397279}, ISSN={2589-4943}, url={http://dx.doi.org/10.2991/978-94-6239-727-9_9}, DOI={10.2991/978-94-6239-727-9_9}, booktitle={Proceedings of the International Conference on Sustainable Micro-Nano Materials \& Innovative Technology (ICSUMMIT 2026)}, publisher={Atlantis Press International BV}, author={Dalal, Bhargavi and Sapra, Pooja}, year={2026}, pages={101--125} }
+
+@article{Mughaid2026SecureAdaptive, title={Secure and Adaptive IoT Network Architecture for Smart Hospitals with Load Balancing in Diabetic Care Systems}, volume={18}, ISSN={2710-1274}, url={http://dx.doi.org/10.15849/ijasca.v18i1.21}, DOI={10.15849/ijasca.v18i1.21}, number={1}, journal={International Journal of Advances in Soft Computing and its Applications}, publisher={Al-Zaytoonah University of Jordan}, author={Mughaid, Ala and AlJamal, Mahmoud and Alnatsheh, Athari and Obiedat, Mamoon and Hussein, Fairouz}, year={2026}, month=mar, pages={355--381} }
+
+@article{Alvarez2023PerformanceAnalysis, title={Performance Analysis of Software-Defined Networks to Mitigate Private VLAN Attacks}, volume={23}, ISSN={1424-8220}, url={http://dx.doi.org/10.3390/s23041747}, DOI={10.3390/s23041747}, number={4}, journal={Sensors}, publisher={MDPI AG}, author={Álvarez, David and Nuño, Pelayo and González, Carlos T. and Bulnes, Francisco G. and Granda, Juan C. and García-Carrillo, Dan}, year={2023}, month=feb, pages={1747} }
+
+@article{Alvarez2026NetworkSecurity, title={Network security misconfigurations in Spanish organisations: An empirical study}, volume={288}, ISSN={1389-1286}, url={http://dx.doi.org/10.1016/j.comnet.2026.112631}, DOI={10.1016/j.comnet.2026.112631}, journal={Computer Networks}, publisher={Elsevier BV}, author={Álvarez, David and Nuño, Pelayo and Bulnes, Francisco G. and Granda, Juan C.}, year={2026}, month=oct, pages={112631} }
+
+@article{Balto2023HybridIot, title={Hybrid IoT Cyber Range}, volume={23}, ISSN={1424-8220}, url={http://dx.doi.org/10.3390/s23063071}, DOI={10.3390/s23063071}, number={6}, journal={Sensors}, publisher={MDPI AG}, author={Balto, Karl Edvard and Yamin, Muhammad Mudassar and Shalaginov, Andrii and Katt, Basel}, year={2023}, month=mar, pages={3071} }
+
+@article{Das2020AnalysisDifferent, title={Analysis of Different Types of Network Attacks on the GNS3 Platform}, volume={3}, ISSN={2636-8129}, url={http://dx.doi.org/10.35377/saucis.03.03.721364}, DOI={10.35377/saucis.03.03.721364}, number={3}, journal={Sakarya University Journal of Computer and Information Sciences}, publisher={Sakarya University Journal of Computer and Information Sciences}, author={DAŞ, Resul and BİTİKÇİ, Burak}, year={2020}, month=dec, pages={210--230} }
+
+@article{Djuanda2024NetworkSecurity, title={Network Security Strategy with VLANs and Access Control Lists: Case Studies and Implementation}, volume={2}, ISSN={3031-1187}, url={http://dx.doi.org/10.58777/its.v2i1.305}, DOI={10.58777/its.v2i1.305}, number={1}, journal={Information Technology and Systems}, publisher={Santoso Academy Network}, author={Djuanda, Dhafa Nugraha}, year={2024}, month=nov, pages={25--31} }
+
+@article{Alhamarneh2021ImproveSecurity, title={Improve Security in Smart Cities Based on IoT, Solve Cyber Electronic Attacks with Technology by using Packet Tracer}, volume={13}, ISSN={0975-2307}, url={http://dx.doi.org/10.5121/ijnsa.2021.13605}, DOI={10.5121/ijnsa.2021.13605}, number={6}, journal={International Journal of Network Security \& Its Applications}, publisher={Academy and Industry Research Collaboration Center (AIRCC)}, author={Al-hamarneh, Raed}, year={2021}, month=nov, pages={55--69} }
+
+@misc{Walia2023SafeSecure,
+  doi = {10.48550/ARXIV.2304.11827},
+  url = {https://arxiv.org/abs/2304.11827},
+  author={Walia, Shivansh and Iyer, Tejas and Tripathi, Shubham and Vanaparthy, Akshith},
+  keywords={Cryptography and Security (cs.CR), Networking and Internet Architecture (cs.NI), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title={Safe and Secure Smart Home using Cisco Packet Tracer},
+  publisher={arXiv},
+  year={2023},
+  copyright={Creative Commons Zero v1.0 Universal}
+}
+
+@article{Grammatikis2021ModelingDetecting, title={Modeling, Detecting, and Mitigating Threats Against Industrial Healthcare Systems: A Combined Software Defined Networking and Reinforcement Learning Approach}, volume={18}, ISSN={1941-0050}, url={http://dx.doi.org/10.1109/tii.2021.3093905}, DOI={10.1109/tii.2021.3093905}, number={3}, journal={IEEE Transactions on Industrial Informatics}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Radoglou-Grammatikis, Panagiotis and Rompolos, Konstantinos and Sarigiannidis, Panagiotis and Argyriou, Vasileios and Lagkas, Thomas and Sarigiannidis, Antonios and Goudos, Sotirios and Wan, Shaohua}, year={2022}, month=mar, pages={2041--2052} }
+
+@article{Zanasi2024FlexibleZero, title={Flexible zero trust architecture for the cybersecurity of industrial IoT infrastructures}, volume={156}, ISSN={1570-8705}, url={http://dx.doi.org/10.1016/j.adhoc.2024.103414}, DOI={10.1016/j.adhoc.2024.103414}, journal={Ad Hoc Networks}, publisher={Elsevier BV}, author={Zanasi, Claudio and Russo, Silvio and Colajanni, Michele}, year={2024}, month=apr, pages={103414} }
+
+@article{Syed2022ZeroTrust, title={Zero Trust Architecture (ZTA): A Comprehensive Survey}, volume={10}, ISSN={2169-3536}, url={http://dx.doi.org/10.1109/access.2022.3174679}, DOI={10.1109/access.2022.3174679}, journal={IEEE Access}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Syed, Naeem Firdous and Shah, Syed W. and Shaghaghi, Arash and Anwar, Adnan and Baig, Zubair and Doss, Robin}, year={2022}, pages={57143--57179} }
+
+@article{Teerakanok2021MigratingZero, title={Migrating to Zero Trust Architecture: Reviews and Challenges}, volume={2021}, ISSN={1939-0114}, url={http://dx.doi.org/10.1155/2021/9947347}, DOI={10.1155/2021/9947347}, journal={Security and Communication Networks}, publisher={Wiley}, author={Teerakanok, Songpon and Uehara, Tetsutaro and Inomata, Atsuo}, editor={Li, Qi}, year={2021}, month=may, pages={1--10} }
+
+@article{Phiayura2023ComprehensiveFramework, title={A Comprehensive Framework for Migrating to Zero Trust Architecture}, volume={11}, ISSN={2169-3536}, url={http://dx.doi.org/10.1109/access.2023.3248622}, DOI={10.1109/access.2023.3248622}, journal={IEEE Access}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Phiayura, Pacharee and Teerakanok, Songpon}, year={2023}, pages={19487--19511} }
+
+@article{Azad2024VerifyTrust, title={Verify and trust: A multidimensional survey of zero-trust security in the age of IoT}, volume={27}, ISSN={2542-6605}, url={http://dx.doi.org/10.1016/j.iot.2024.101227}, DOI={10.1016/j.iot.2024.101227}, journal={Internet of Things}, publisher={Elsevier BV}, author={Azad, Muhammad Ajmal and Abdullah, Sidrah and Arshad, Junaid and Lallie, Harjinder and Ahmed, Yussuf Hassan}, year={2024}, month=oct, pages={101227} }
+
+@article{Garciateodoro2022NovelZero, title={A novel zero-trust network access control scheme based on the security profile of devices and users}, volume={212}, ISSN={1389-1286}, url={http://dx.doi.org/10.1016/j.comnet.2022.109068}, DOI={10.1016/j.comnet.2022.109068}, journal={Computer Networks}, publisher={Elsevier BV}, author={García-Teodoro, P. and Camacho, J. and Maciá-Fernández, G. and Gómez-Hernández, J.A. and López-Marín, V.J.}, year={2022}, month=jul, pages={109068} }
+
+@article{Dadkhah2024CiciomtBenchmark, title={CICIoMT2024: A benchmark dataset for multi-protocol security assessment in IoMT}, volume={28}, ISSN={2542-6605}, url={http://dx.doi.org/10.1016/j.iot.2024.101351}, DOI={10.1016/j.iot.2024.101351}, journal={Internet of Things}, publisher={Elsevier BV}, author={Dadkhah, Sajjad and Neto, Euclides Carlos Pinto and Ferreira, Raphael and Molokwu, Reginald Chukwuka and Sadeghi, Somayeh and Ghorbani, Ali A.}, year={2024}, month=dec, pages={101351} }
+
+@article{Zachos2021AnomalyIntrusion, title={An Anomaly-Based Intrusion Detection System for Internet of Medical Things Networks}, volume={10}, ISSN={2079-9292}, url={http://dx.doi.org/10.3390/electronics10212562}, DOI={10.3390/electronics10212562}, number={21}, journal={Electronics}, publisher={MDPI AG}, author={Zachos, Georgios and Essop, Ismael and Mantas, Georgios and Porfyrakis, Kyriakos and Ribeiro, José C. and Rodriguez, Jonathan}, year={2021}, month=oct, pages={2562} }
+
+@article{Thamilarasu2020IntrusionDetection, title={An Intrusion Detection System for Internet of Medical Things}, volume={8}, ISSN={2169-3536}, url={http://dx.doi.org/10.1109/access.2020.3026260}, DOI={10.1109/access.2020.3026260}, journal={IEEE Access}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Thamilarasu, Geethapriya and Odesile, Adedayo and Hoang, Andrew}, year={2020}, pages={181560--181576} }
+
+@article{Said2021EfficientAnomaly, title={Efficient Anomaly Detection for Smart Hospital IoT Systems}, volume={21}, ISSN={1424-8220}, url={http://dx.doi.org/10.3390/s21041026}, DOI={10.3390/s21041026}, number={4}, journal={Sensors}, publisher={MDPI AG}, author={Said, Abdel Mlak and Yahyaoui, Aymen and Abdellatif, Takoua}, year={2021}, month=feb, pages={1026} }
+
+@article{Ibrahim2024SecurityAnalysis, title={Security Analysis for Smart Healthcare Systems}, volume={24}, ISSN={1424-8220}, url={http://dx.doi.org/10.3390/s24113375}, DOI={10.3390/s24113375}, number={11}, journal={Sensors}, publisher={MDPI AG}, author={Ibrahim, Mariam and Al-Wadi, Abdallah and Elhafiz, Ruba}, year={2024}, month=may, pages={3375} }
+
+@article{Smiliotopoulos2024DetectingLateral, title={Detecting lateral movement: A systematic survey}, volume={10}, ISSN={2405-8440}, url={http://dx.doi.org/10.1016/j.heliyon.2024.e26317}, DOI={10.1016/j.heliyon.2024.e26317}, number={4}, journal={Heliyon}, publisher={Elsevier BV}, author={Smiliotopoulos, Christos and Kambourakis, Georgios and Kolias, Constantinos}, year={2024}, month=feb, pages={e26317} }
+
+@article{Ali2021DesigningSecure, title={DESIGNING A SECURE NETWORK SOLUTION AGAINST DHCP ATTACKS}, volume={1}, ISSN={2222-758X}, url={http://dx.doi.org/10.31987/ijict.1.1.175}, DOI={10.31987/ijict.1.1.175}, number={1}, journal={Iraqi Journal of Information and Communications Technology}, publisher={College of Information Engineering - Al-Nahrain University}, author={Ali, Salim M. and Shareef, Ammar A.}, year={2021}, month=dec, pages={45--57} }
+
+@article{Wintolo2023DescriptiveAnalysis, title={Descriptive Analysis and ANOVA Test with File Sending on Computer Networks Attacked with Rogue's Dynamic Host Configuration Protocol (DHCP)}, volume={9}, ISSN={2338-3070}, url={http://dx.doi.org/10.26555/jiteki.v9i2.26167}, DOI={10.26555/jiteki.v9i2.26167}, number={2}, journal={Jurnal Ilmiah Teknik Elektro Komputer dan Informatika}, publisher={Universitas Ahmad Dahlan}, author={Wintolo, Hero and Indrianingsih, Yuliani and Hamdani, Wahyu and Abdie, Syafrudin}, year={2023}, month=may, pages={375--384} }
+
+@article{Hussain2026PostQuantum, title={Post-quantum cognitive zero trust architecture for healthcare IoT devices}, volume={21}, ISSN={1932-6203}, url={http://dx.doi.org/10.1371/journal.pone.0348600}, DOI={10.1371/journal.pone.0348600}, number={5}, journal={PLOS One}, publisher={Public Library of Science (PLoS)}, author={Hussain, Hashim and Mishra, Shailendra and Alshenaifi, Reem}, editor={Yang, Chun-Wei}, year={2026}, month=may, pages={e0348600} }
+
+@article{Hireche2022SecurityPrivacy, title={Security and Privacy Management in Internet of Medical Things (IoMT): A Synthesis}, volume={2}, ISSN={2624-800X}, url={http://dx.doi.org/10.3390/jcp2030033}, DOI={10.3390/jcp2030033}, number={3}, journal={Journal of Cybersecurity and Privacy}, publisher={MDPI AG}, author={Hireche, Rachida and Mansouri, Houssem and Pathan, Al-Sakib Khan}, year={2022}, month=aug, pages={640--661} }
+
+@article{Martinez2022ComprehensiveReview, title={A Comprehensive Review of the State-of-the-Art on Security and Privacy Issues in Healthcare}, volume={55}, ISSN={1557-7341}, url={http://dx.doi.org/10.1145/3571156}, DOI={10.1145/3571156}, number={12}, journal={ACM Computing Surveys}, publisher={Association for Computing Machinery (ACM)}, author={López Martínez, Antonio and Gil Pérez, Manuel and Ruiz-Martínez, Antonio}, year={2023}, month=mar, pages={1--38} }
+
+@article{Tervoort2020SolutionsMitigating, title={Solutions for Mitigating Cybersecurity Risks Caused by Legacy Software in Medical Devices: A Scoping Review}, volume={8}, ISSN={2169-3536}, url={http://dx.doi.org/10.1109/access.2020.2984376}, DOI={10.1109/access.2020.2984376}, journal={IEEE Access}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Tervoort, Tom and De Oliveira, Marcela Tuler and Pieters, Wolter and Van Gelder, Pieter and Olabarriaga, Silvia Delgado and Marquering, Henk}, year={2020}, pages={84352--84361} }
+
+@article{Unozkan2022AttackGraphs, title={Using attack graphs to defend healthcare systems from cyberattacks: a longitudinal empirical study}, volume={11}, ISSN={2192-6670}, url={http://dx.doi.org/10.1007/s13721-022-00391-1}, DOI={10.1007/s13721-022-00391-1}, number={1}, journal={Network Modeling Analysis in Health Informatics and Bioinformatics}, publisher={Springer Science and Business Media LLC}, author={Ünözkan, Hüseyin and Ertem, Mehmet and Bendak, Salaheddine}, year={2022}, month=nov }
+
+@article{Alhaj2022SurveyGovern, title={A Survey: To Govern, Protect, and Detect Security Principles on Internet of Medical Things (IoMT)}, volume={10}, ISSN={2169-3536}, url={http://dx.doi.org/10.1109/access.2022.3225038}, DOI={10.1109/access.2022.3225038}, journal={IEEE Access}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Ahmed Alhaj, Taqwa and Abdulla, Settana Mohammed and Iderss, Mohmmed Abdulla Elshekh and Ali, Alaa Abdalati Ahmed and Elhaj, Fatin A. and Remli, Muhammad Akmal and Gabralla, Lubna Abdelkareim}, year={2022}, pages={124777--124791} }
+
+@article{Yadegari2025UnifiedIot, title={A unified IoT architectural model for smart hospitals: enhancing interoperability, security, and efficiency through clinical information systems (CIS)}, volume={12}, ISSN={2196-1115}, url={http://dx.doi.org/10.1186/s40537-025-01197-4}, DOI={10.1186/s40537-025-01197-4}, number={1}, journal={Journal of Big Data}, publisher={Springer Science and Business Media LLC}, author={Yadegari, Fatemeh and Asosheh, Abbas}, year={2025}, month=jun }
+
+@article{Alhajahmad2025ImprovingSwitch, title={Improving Switch Security Against MITM Attacks Using DHCP Snooping and Port Security}, volume={9}, ISSN={2618-5954}, url={http://dx.doi.org/10.33461/uybisbbd.1766477}, DOI={10.33461/uybisbbd.1766477}, number={2}, journal={Uluslararası Yönetim Bilişim Sistemleri ve Bilgisayar Bilimleri Dergisi}, publisher={Uluslararasi Yonetim Bilisim Sistemleri ve Bilgisayar Bilimleri Dergisi}, author={Alhajahmad, Bashar}, year={2025}, month=dec, pages={157--174} }
+
+@article{Ibrahim2020AttackGraph, title={Attack Graph Modeling for Implantable Pacemaker}, volume={10}, ISSN={2079-6374}, url={http://dx.doi.org/10.3390/bios10020014}, DOI={10.3390/bios10020014}, number={2}, journal={Biosensors}, publisher={MDPI AG}, author={Ibrahim, Mariam and Alsheikh, Ahmad and Matar, Aseel}, year={2020}, month=feb, pages={14} }
+
+@article{Alotaibi2025HybridZeroTrustLegacy, title={Hybrid Approach to Secure Legacy Healthcare Systems: Integrating Zero Trust and Traditional Security Models}, volume={73}, ISSN={2231-5381}, url={http://dx.doi.org/10.14445/22315381/ijett-v73i5p103}, DOI={10.14445/22315381/ijett-v73i5p103}, number={5}, journal={International Journal of Engineering Trends and Technology}, publisher={Seventh Sense Research Group Journals}, author={Alotaibi, Bashayer and Alajmani, Samah}, year={2025}, month=may, pages={16--29} }
+
+@article{AvilaPesantez2022HospitalSwitchPolicies, title={Cybersecurity Policies for Network Switching Devices in Hospital Data Centers: A Case Study}, volume={2}, ISSN={2789-5009}, url={http://dx.doi.org/10.18502/espoch.v2i2.11413}, DOI={10.18502/espoch.v2i2.11413}, number={2}, journal={ESPOCH Congresses: The Ecuadorian Journal of S.T.E.A.M.}, publisher={Knowledge E DMCC}, author={Fernando Avila Pesantez, Diego and Chalan Analuisa, Richard and Figueras, George and Avila, Miriam}, year={2022}, month=jun, pages={507--518} }
+
+@article{AvilaPesantez2026HospitalSwitchPolicies,
+  author={Joselyn Katiuska Franco Avila and Mario Sebastián Avila León and Camilly Yuliana Pacheco Ordoñez and Marlon S. SISALIMA and Gregory Iván Sornoza Púa and Anthony André Tenesaca Lanchi},
+  title={Buenas prácticas de seguridad para redes empresariales: Implementación de VLANs, ACLs y Router-on-a-Stick},
+  journal={Dialnet (Universidad de la Rioja)},
+  year={2026},
+  url = {https://dialnet.unirioja.es/servlet/oaiart?codigo=10763167}
+}
+
+% ==== END merged from research/papers/refs.bib ====

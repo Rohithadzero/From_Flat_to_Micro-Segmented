@@ -1,0 +1,112 @@
+! =====================================================================
+! SW-ADMIN  (Cisco 2960-24TT)  -  D3 MICRO-SEGMENTATION
+! Same hardening as the ward switches. The guest AP port allows up to
+! 10 MAC addresses because every wireless client behind the AP shows
+! up on this one switch port.
+! =====================================================================
+enable
+configure terminal
+hostname SW-ADMIN
+no ip domain-lookup
+enable secret Admin@2026
+service password-encryption
+banner motd ^Authorised access only. Activity is logged.^
+!
+ip domain-name hospital.local
+username netadmin privilege 15 secret Adm1n@2026
+crypto key generate rsa general-keys modulus 1024
+ip ssh version 2
+!
+vlan 10
+ name STAFF
+vlan 40
+ name BLDG-IOT
+vlan 50
+ name GUEST
+vlan 99
+ name MGMT
+vlan 998
+ name NATIVE-UNUSED
+vlan 999
+ name BLACKHOLE
+!
+ip dhcp snooping
+ip dhcp snooping vlan 10,40,50
+no ip dhcp snooping information option
+!
+interface FastEthernet0/1
+ description Reception-PC (staff)
+ switchport mode access
+ switchport access vlan 10
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+interface FastEthernet0/2
+ description NetAdmin-PC (management)
+ switchport mode access
+ switchport access vlan 99
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+interface range FastEthernet0/3 - 7
+ description Building IoT (door, fire, HVAC, webcam) + test node location 3
+ switchport mode access
+ switchport access vlan 40
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security mac-address sticky
+ switchport port-security violation shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+interface FastEthernet0/8
+ description Guest-AP (guest Wi-Fi)
+ switchport mode access
+ switchport access vlan 50
+ switchport port-security
+ switchport port-security maximum 10
+ switchport port-security violation restrict
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+!
+interface range FastEthernet0/9 - 24, GigabitEthernet0/2
+ description UNUSED - parked
+ switchport mode access
+ switchport access vlan 999
+ shutdown
+!
+interface GigabitEthernet0/1
+ description 802.1Q trunk to CORE-MLS Fa0/3
+ switchport mode trunk
+ switchport trunk native vlan 998
+ switchport trunk allowed vlan 10,40,50,99
+ switchport nonegotiate
+ ip dhcp snooping trust
+!
+interface Vlan1
+ no ip address
+ shutdown
+interface Vlan99
+ description Management
+ ip address 10.10.99.13 255.255.255.0
+ no shutdown
+ip default-gateway 10.10.99.1
+!
+access-list 10 remark Management VLAN only
+access-list 10 permit 10.10.99.0 0.0.0.255
+!
+line console 0
+ login local
+ exec-timeout 5 0
+line vty 0 15
+ access-class 10 in
+ login local
+ transport input ssh
+ exec-timeout 5 0
+end
+write memory

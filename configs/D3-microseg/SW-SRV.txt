@@ -1,0 +1,41 @@
+! =====================================================================
+! SW-SRV  (Cisco 2960-24TT)  -  server-room switch
+! D3 adds F-4 hardening (unused ports parked + shut); D0-D2 are unchanged.
+! Same base configuration in ALL designs. It is a plain Layer-2 switch with
+! every port in VLAN 1; the device on the other end of G0/1 decides
+! which network the servers are in:
+!   D0      -> CORE-MLS G0/2, access VLAN 1 (flat)
+!   D1, D2  -> CORE-MLS G0/2, access VLAN 20 (server VLAN)
+!   D3      -> ASA-SRV G1/2 (inside interface of the firewall)
+! =====================================================================
+enable
+configure terminal
+hostname SW-SRV
+no ip domain-lookup
+enable secret cisco
+!
+interface FastEthernet0/1
+ description EHR-SRV 10.10.20.10
+interface FastEthernet0/2
+ description DNS-DHCP-SRV 10.10.20.11
+interface FastEthernet0/3
+ description IOT-REG-SRV 10.10.20.12
+interface FastEthernet0/4
+ description SYSLOG-NTP-SRV 10.10.20.13
+interface GigabitEthernet0/1
+ description Uplink (CORE-MLS G0/2 in D0-D2, ASA-SRV G1/2 in D3)
+!
+! ---- F-4 fix: unused ports are inside the firewall's trusted zone - park them ----
+vlan 999
+ name BLACKHOLE
+interface range FastEthernet0/5 - 24, GigabitEthernet0/2
+ description UNUSED - parked
+ switchport mode access
+ switchport access vlan 999
+ shutdown
+!
+line console 0
+ password cisco
+ login
+end
+write memory

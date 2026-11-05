@@ -1,0 +1,13 @@
+% =====================================================================
+% Appendix: secondary tables (outside the main-text page budget)
+% =====================================================================
+\appendices
+\section{Supplementary tables}
+\label{app:tables}
+Table~\ref{tab:addressing} lists the routed and management addresses of D3, and Table~\ref{tab:aclinv} shows where each design's ACEs sit. \ifhavestatic Table~\ref{tab:static} gives the analyser's verdict for every attack after the fixes of Section~\ref{sec:res-verify}, and Table~\ref{tab:staticsurface} its reachability counts. \fi Table~\ref{tab:overhead} reports the path analysis and the O1 overhead test\ifhavedetection, and Table~\ref{tab:detection} the detection coverage per attack\fi.
+
+\input{tables/addressing}
+\input{tables/acl_inventory}
+\ifhavestatic\input{tables/static_analysis}\fi
+\input{tables/overhead}
+\ifhavedetection\input{tables/detection}\fi

@@ -1,0 +1,137 @@
+! =====================================================================
+! CORE-MLS  (Cisco Catalyst 3560-24PS)  -  D2 ZONE ACLs
+! = D1 + coarse extended ACLs applied INBOUND on the SVIs.
+!   * Medical IoT and building IoT may talk to the server ZONE (any port)
+!     and nothing else internal or external.
+!   * Guests may use DHCP/DNS and the Internet, never internal subnets.
+!   * Staff and management are unfiltered.
+! Coarse = whole zone to whole zone; it does NOT say which server or
+! which port, so a compromised IoT device can still reach the EHR.
+!
+! =====================================================================
+enable
+configure terminal
+hostname CORE-MLS
+no ip domain-lookup
+enable secret cisco
+service timestamps log datetime msec
+ip routing
+!
+vlan 10
+ name STAFF
+vlan 20
+ name SERVERS
+vlan 30
+ name MED-IOT
+vlan 40
+ name BLDG-IOT
+vlan 50
+ name GUEST
+vlan 99
+ name MGMT
+!
+interface GigabitEthernet0/1
+ description Routed link to EDGE-RTR G0/1
+ no switchport
+ ip address 10.10.255.2 255.255.255.252
+ no shutdown
+!
+interface range FastEthernet0/1 - 3
+ description 802.1Q trunk to access switch
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ description To SW-SRV G0/1 (server VLAN 20)
+ switchport mode access
+ switchport access vlan 20
+!
+! ---------------------------------------------------------------------
+! Zone ACLs (extended, named). Order matters: first match wins and
+! every ACL ends with an invisible "deny ip any any".
+! UDP 67 = DHCP (bootps). The DHCP DISCOVER is a broadcast from 0.0.0.0,
+! so it must be permitted before anything else or no host gets an IP.
+! F-3 fix: only the broadcast DISCOVER/REQUEST and the real DHCP server
+! (renewals) - 'permit udp any any eq 67' was a UDP/67 exfil path via PAT.
+! ---------------------------------------------------------------------
+ip access-list extended MEDIOT-IN
+ remark Medical IoT -> server zone only
+ permit udp any host 255.255.255.255 eq 67
+ permit udp any host 10.10.20.11 eq 67
+ remark F-1 fix: the server zone contains the core's own SVI 10.10.20.1 (Telnet VTY)
+ deny ip any host 10.10.20.1
+ permit ip 10.10.30.0 0.0.0.255 10.10.20.0 0.0.0.255
+ deny ip any any
+!
+ip access-list extended BLDGIOT-IN
+ remark Building IoT -> server zone only
+ permit udp any host 255.255.255.255 eq 67
+ permit udp any host 10.10.20.11 eq 67
+ remark F-1 fix: the server zone contains the core's own SVI 10.10.20.1 (Telnet VTY)
+ deny ip any host 10.10.20.1
+ permit ip 10.10.40.0 0.0.0.255 10.10.20.0 0.0.0.255
+ deny ip any any
+!
+ip access-list extended GUEST-IN
+ remark Guests -> DHCP, DNS, Internet. Never internal subnets
+ permit udp any host 255.255.255.255 eq 67
+ permit udp any host 10.10.20.11 eq 67
+ permit udp 10.10.50.0 0.0.0.255 host 10.10.20.11 eq 53
+ remark H-1 fix: EDGE-RTR WAN 198.51.100.2 is outside 10/8 but is infrastructure (Telnet VTY)
+ deny ip any 198.51.100.0 0.0.0.3
+ deny ip any 10.0.0.0 0.255.255.255
+ permit ip 10.10.50.0 0.0.0.255 any
+!
+interface Vlan10
+ description STAFF gateway (unfiltered)
+ ip address 10.10.10.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ no shutdown
+interface Vlan20
+ description SERVERS gateway
+ ip address 10.10.20.1 255.255.255.0
+ no shutdown
+interface Vlan30
+ description MEDICAL IoT gateway
+ ip address 10.10.30.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ ip access-group MEDIOT-IN in
+ no shutdown
+interface Vlan40
+ description BUILDING IoT gateway
+ ip address 10.10.40.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ ip access-group BLDGIOT-IN in
+ no shutdown
+interface Vlan50
+ description GUEST Wi-Fi gateway
+ ip address 10.10.50.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ ip access-group GUEST-IN in
+ no shutdown
+interface Vlan99
+ description MANAGEMENT gateway (unfiltered)
+ ip address 10.10.99.1 255.255.255.0
+ no shutdown
+!
+! ---- Floating static backup (AD 250): used only if OSPF is down ----
+ip route 0.0.0.0 0.0.0.0 10.10.255.1 250
+!
+router ospf 1
+ router-id 2.2.2.2
+ passive-interface default
+ no passive-interface GigabitEthernet0/1
+ network 10.10.0.0 0.0.255.255 area 0
+!
+ntp server 10.10.20.13
+logging host 10.10.20.13
+!
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input telnet
+end
+write memory

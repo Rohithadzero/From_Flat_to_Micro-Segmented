@@ -1,0 +1,5 @@
+design,source,attempts,blocked,ABR,ASR,blast_radius_weighted,PCR,detection_coverage,functional_source,fisher_p_vs_D0,fisher_p_vs_D1,fisher_p_vs_D2
+D0,expected,45,0,0.0,0.0,1.0,0.167,,expected,,,
+D1,expected,45,0,0.0,0.0,1.0,0.167,,expected,1,,
+D2,expected,45,12,0.267,0.652,0.388,0.389,,expected,,0.00021,
+D3,expected,45,27,0.6,0.884,0.119,0.667,,expected,,,0.00268

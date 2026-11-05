@@ -1,0 +1,19 @@
+% =====================================================================
+\section{Related Work}
+\label{sec:related}
+% =====================================================================
+% Citations follow research/papers/INDEX.md and research/GAP-ANALYSIS.md
+% (48 papers; Sifawa, Odule, Avila Pesantez, Raval, Djuanda and Alhajahmad
+% read in full, the others at abstract level).
+
+\textbf{Simulated segmentation studies.}
+The closest work is Sifawa et al.~\cite{Sifawa2026ImplementationEvaluation}, who place Finance, HR, IT, Guest and Server VLANs in Packet Tracer and add extended, default-deny ACLs. They show that VLAN segmentation does not isolate hosts once inter-VLAN routing is enabled, using six connectivity scenarios. Our D1 reproduces that effect, and our ladder extends it with two further levels, an IoMT attacker, Layer-2 attacks and a cost metric. Odule et al.~\cite{Odule2026SimulationValidation} compare a flat and a micro-segmented 24-node SME network in GNS3, with pfSense, Zeek and OpenDaylight. A ``patient zero'' node drives recon and lateral movement, and they report reachable nodes, blast radius, and latency and throughput overhead. We adopt their blast-radius idea and weight it by asset criticality. Djuanda~\cite{Djuanda2024NetworkSecurity} applies VLANs and ACLs to a bank branch. These studies compare two states. None models a hospital or a compromised medical device.
+
+\textbf{Hospital networks.}
+\'{A}vila Pesantez et al.~\cite{AvilaPesantez2022HospitalSwitchPolicies} harden a hospital data-centre scenario in EVE-NG against Layer-2 attacks with port security, DHCP snooping and BPDU protection. Mughaid et al.~\cite{Mughaid2026SecureAdaptive} build a smart-hospital IoT network in Packet Tracer and evaluate latency, throughput and penetration tests. Jassim~\cite{Jassim2024SmartHospital} designs a Packet Tracer hospital network around requirements and cost. Alhajahmad~\cite{Alhajahmad2025ImprovingSwitch} combines DHCP snooping and port security in Packet Tracer against DHCP spoofing. None of them grades segmentation levels or attacks from a medical-device port.
+
+\textbf{Zero Trust and micro-segmentation for healthcare and IoT.}
+NIST SP~800-207 names micro-segmentation as one Zero Trust deployment model~\cite{nist80027}. Tyler and Viana~\cite{Tyler2021TrustNo} and Alotaibi et al.~\cite{Alotaibi2025HybridZeroTrustLegacy} frame the move to Zero Trust for hospitals with unmanageable legacy devices. Hari et al.~\cite{Hari2026ThreeTier} evaluate a three-tier micro-segmentation framework on hospital and campus data. MEDIotWALL~\cite{GosalvezWhite2025Mediotwall} generates per-device firewall rules for healthcare IoT. Raval et al.~\cite{Raval2026ImplementationDynamic} quarantine an infected IoT asset by health tag. Radoglou Grammatikis et al.~\cite{Grammatikis2021ModelingDetecting} mitigate healthcare-protocol attacks with SDN flow rules. These are frameworks or systems; as far as we could determine, none publishes a configuration-level design that others can rebuild. \'{A}lvarez et al.\ compare ACL and SDN mitigation of private-VLAN attacks~\cite{Alvarez2023PerformanceAnalysis}. Practitioner evidence explains why cost matters: a survey of 400 practitioners examines why segmentation projects fail~\cite{Dube2026WhyNetwork}, and link- and network-layer weaknesses are widespread in real organisations~\cite{Alvarez2026NetworkSecurity}.
+
+\textbf{Detection and verification.}
+Intrusion detection for IoMT~\cite{Thamilarasu2020IntrusionDetection} and lateral-movement detection~\cite{Smiliotopoulos2024DetectingLateral} complement prevention. Our quarantine test uses the network's own ACL counters as a minimal detector. None of the simulation studies we found checks its configurations with an independent reachability model. Repeated runs with a significance test are rare too; Wintolo et al.\ apply ANOVA to the impact of rogue DHCP~\cite{Wintolo2023DescriptiveAnalysis}.

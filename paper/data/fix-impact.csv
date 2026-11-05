@@ -1,0 +1,5 @@
+design,version,config_lines,aces,guest_edge_mgmt,a4,hosts_mean,services_mean,udp67_internet,unused_srv_ports_up,analyzer_disagreements,functional_pass,functional_total
+D2,pre-fix,293,11,yes,P/P/P,9.0,5.0,yes,21,3,9,9
+D2,post-fix,302,17,no,B/B/B,8.0,4.0,no,21,0,9,9
+D3,pre-fix,559,47,no,B/B/B,2.67,1.0,yes,21,0,9,9
+D3,post-fix,571,52,no,B/B/B,2.67,1.0,no,0,0,9,9

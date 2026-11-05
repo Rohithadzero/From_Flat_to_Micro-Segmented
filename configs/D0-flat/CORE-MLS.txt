@@ -1,0 +1,64 @@
+! =====================================================================
+! CORE-MLS  (Cisco Catalyst 3560-24PS multilayer switch)  -  D0 FLAT
+! Role: one big Layer-2 domain (VLAN 1, 10.10.0.0/17) + default gateway
+!       10.10.0.1 + OSPF to the edge router.
+! Every host can reach every other host: this is the baseline.
+!
+! =====================================================================
+enable
+configure terminal
+hostname CORE-MLS
+no ip domain-lookup
+enable secret cisco
+service timestamps log datetime msec
+ip routing
+!
+interface GigabitEthernet0/1
+ description Routed link to EDGE-RTR G0/1
+ no switchport
+ ip address 10.10.255.2 255.255.255.252
+ no shutdown
+!
+interface FastEthernet0/1
+ description To SW-WARD-A G0/1 (flat, VLAN 1)
+ switchport mode access
+ switchport access vlan 1
+interface FastEthernet0/2
+ description To SW-WARD-B G0/1 (flat, VLAN 1)
+ switchport mode access
+ switchport access vlan 1
+interface FastEthernet0/3
+ description To SW-ADMIN G0/1 (flat, VLAN 1)
+ switchport mode access
+ switchport access vlan 1
+interface GigabitEthernet0/2
+ description To SW-SRV G0/1 (flat, VLAN 1)
+ switchport mode access
+ switchport access vlan 1
+!
+! ---- The single flat subnet: every device lives here ----
+interface Vlan1
+ description FLAT hospital LAN gateway
+ ip address 10.10.0.1 255.255.128.0
+ no shutdown
+!
+! ---- Floating static backup (AD 250): used only if OSPF is down ----
+ip route 0.0.0.0 0.0.0.0 10.10.255.1 250
+!
+router ospf 1
+ router-id 2.2.2.2
+ network 10.10.0.0 0.0.255.255 area 0
+ passive-interface Vlan1
+!
+ntp server 10.10.20.13
+logging host 10.10.20.13
+!
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input telnet
+end
+write memory

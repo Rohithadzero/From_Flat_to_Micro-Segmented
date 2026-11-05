@@ -1,0 +1,196 @@
+! =====================================================================
+! CORE-MLS  (Cisco Catalyst 3560-24PS)  -  D3 MICRO-SEGMENTATION
+! Changes from D2:
+!  * Medical IoT split by device class: VLAN 31 monitors, VLAN 32 pumps
+!  * Server VLAN 20 removed from the core: servers now sit behind the
+!    ASA firewall (G0/2 becomes a routed /30 link to the ASA)
+!  * Least-privilege ACLs: each class may reach only the exact server
+!    and port it needs (e.g. monitors -> IoT server TCP 80, nothing else)
+!  * Trunks: unused native VLAN 998, allowed-VLAN lists, DTP off
+!  * Unused ports shut down and parked in black-hole VLAN 999
+!  * SSH-only management from VLAN 99
+!
+! =====================================================================
+enable
+configure terminal
+hostname CORE-MLS
+no ip domain-lookup
+enable secret Core@2026
+service password-encryption
+service timestamps log datetime msec
+banner motd ^Authorised access only. Activity is logged.^
+ip routing
+!
+ip domain-name hospital.local
+username netadmin privilege 15 secret Adm1n@2026
+crypto key generate rsa general-keys modulus 1024
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+!
+vlan 10
+ name STAFF
+vlan 31
+ name MED-MONITORS
+vlan 32
+ name MED-INFUSION
+vlan 40
+ name BLDG-IOT
+vlan 50
+ name GUEST
+vlan 99
+ name MGMT
+vlan 998
+ name NATIVE-UNUSED
+vlan 999
+ name BLACKHOLE
+!
+interface GigabitEthernet0/1
+ description Routed link to EDGE-RTR G0/1
+ no switchport
+ ip address 10.10.255.2 255.255.255.252
+ no shutdown
+!
+! ---- Trunks: explicit native VLAN + only the VLANs each closet needs ----
+interface range FastEthernet0/1 - 2
+ description 802.1Q trunk to ward switch
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 998
+ switchport trunk allowed vlan 10,31,32,99
+ switchport nonegotiate
+interface FastEthernet0/3
+ description 802.1Q trunk to SW-ADMIN
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk native vlan 998
+ switchport trunk allowed vlan 10,40,50,99
+ switchport nonegotiate
+!
+! ---- Routed link to the firewall that guards the clinical servers ----
+interface GigabitEthernet0/2
+ description Routed link to ASA-SRV G1/1 (outside)
+ no switchport
+ ip address 10.10.254.1 255.255.255.252
+ no shutdown
+!
+! ---- Park every unused port ----
+interface range FastEthernet0/4 - 24
+ switchport mode access
+ switchport access vlan 999
+ shutdown
+!
+! =====================================================================
+! LEAST-PRIVILEGE ACLs (inbound on each SVI)
+! 10.10.20.10 EHR-SRV | .11 DNS-DHCP-SRV | .12 IOT-REG-SRV | .13 SYSLOG-NTP
+! "echo-reply to 10.10.99.0" lets the admin ping devices for
+! troubleshooting while the devices themselves cannot start a ping.
+! =====================================================================
+ip access-list extended STAFF-IN
+ remark Staff: DHCP, DNS, EHR web, IoT dashboard, ping servers, Internet
+ permit udp any any eq 67
+ permit udp 10.10.10.0 0.0.0.255 host 10.10.20.11 eq 53
+ permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.10 eq 80
+ permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.10 eq 443
+ permit tcp 10.10.10.0 0.0.0.255 host 10.10.20.12 eq 80
+ permit icmp 10.10.10.0 0.0.0.255 10.10.20.0 0.0.0.255 echo
+ permit icmp 10.10.10.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply
+ deny ip any 10.0.0.0 0.255.255.255
+ permit ip 10.10.10.0 0.0.0.255 any
+!
+ip access-list extended MONITORS-IN
+ remark Patient monitors: DHCP + IoT registration server only
+ permit udp any any eq 67
+ permit tcp 10.10.31.0 0.0.0.255 host 10.10.20.12 eq 80
+ permit icmp 10.10.31.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply
+ deny ip any any
+!
+ip access-list extended INFUSION-IN
+ remark Infusion pumps: DHCP + IoT registration server only
+ permit udp any any eq 67
+ permit tcp 10.10.32.0 0.0.0.255 host 10.10.20.12 eq 80
+ permit icmp 10.10.32.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply
+ deny ip any any
+!
+ip access-list extended BLDGIOT-IN
+ remark Building IoT: DHCP + IoT registration server only
+ permit udp any any eq 67
+ permit tcp 10.10.40.0 0.0.0.255 host 10.10.20.12 eq 80
+ permit icmp 10.10.40.0 0.0.0.255 10.10.99.0 0.0.0.255 echo-reply
+ deny ip any any
+!
+ip access-list extended GUEST-IN
+ remark Guests: DHCP, DNS, Internet. Never internal subnets
+ permit udp any any eq 67
+ permit udp 10.10.50.0 0.0.0.255 host 10.10.20.11 eq 53
+ deny ip any 10.0.0.0 0.255.255.255
+ permit ip 10.10.50.0 0.0.0.255 any
+!
+! ---- Only the management VLAN may open a VTY session ----
+access-list 10 remark Management VLAN only
+access-list 10 permit 10.10.99.0 0.0.0.255
+!
+interface Vlan1
+ no ip address
+ shutdown
+interface Vlan10
+ description STAFF gateway
+ ip address 10.10.10.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ ip access-group STAFF-IN in
+ no shutdown
+interface Vlan31
+ description MED-MONITORS gateway
+ ip address 10.10.31.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ ip access-group MONITORS-IN in
+ no shutdown
+interface Vlan32
+ description MED-INFUSION gateway
+ ip address 10.10.32.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ ip access-group INFUSION-IN in
+ no shutdown
+interface Vlan40
+ description BUILDING IoT gateway
+ ip address 10.10.40.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ ip access-group BLDGIOT-IN in
+ no shutdown
+interface Vlan50
+ description GUEST Wi-Fi gateway
+ ip address 10.10.50.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ ip access-group GUEST-IN in
+ no shutdown
+interface Vlan99
+ description MANAGEMENT gateway (trusted)
+ ip address 10.10.99.1 255.255.255.0
+ no shutdown
+!
+! ---- Server zone is behind the ASA ----
+ip route 10.10.20.0 255.255.255.0 10.10.254.2
+!
+! ---- Floating static backup (AD 250): used only if OSPF is down ----
+ip route 0.0.0.0 0.0.0.0 10.10.255.1 250
+!
+router ospf 1
+ router-id 2.2.2.2
+ passive-interface default
+ no passive-interface GigabitEthernet0/1
+ network 10.10.0.0 0.0.255.255 area 0
+ redistribute static subnets
+!
+ntp server 10.10.20.13
+logging host 10.10.20.13
+!
+line console 0
+ login local
+ exec-timeout 5 0
+line vty 0 15
+ access-class 10 in
+ login local
+ transport input ssh
+ exec-timeout 5 0
+end
+write memory

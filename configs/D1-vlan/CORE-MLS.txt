@@ -1,0 +1,100 @@
+! =====================================================================
+! CORE-MLS  (Cisco Catalyst 3560-24PS)  -  D1 VLAN-ONLY
+! Role: devices are split by role into VLANs; the core routes between
+!       them with SVIs (inter-VLAN routing) but filters NOTHING.
+!       Shows that VLANs alone do not stop lateral movement.
+!
+! =====================================================================
+enable
+configure terminal
+hostname CORE-MLS
+no ip domain-lookup
+enable secret cisco
+service timestamps log datetime msec
+ip routing
+!
+! ---- VLAN database ----
+vlan 10
+ name STAFF
+vlan 20
+ name SERVERS
+vlan 30
+ name MED-IOT
+vlan 40
+ name BLDG-IOT
+vlan 50
+ name GUEST
+vlan 99
+ name MGMT
+!
+interface GigabitEthernet0/1
+ description Routed link to EDGE-RTR G0/1
+ no switchport
+ ip address 10.10.255.2 255.255.255.252
+ no shutdown
+!
+! ---- 802.1Q trunks to the access switches (all VLANs allowed) ----
+! The 3560 supports ISL and dot1q, so the encapsulation must be set
+! before the port can be made a trunk.
+interface range FastEthernet0/1 - 3
+ description 802.1Q trunk to access switch
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ description To SW-SRV G0/1 (server VLAN 20)
+ switchport mode access
+ switchport access vlan 20
+!
+! ---- SVIs = default gateways. ip helper-address relays DHCP ----
+! ---- broadcasts to the DHCP server in the server VLAN.      ----
+interface Vlan10
+ description STAFF gateway
+ ip address 10.10.10.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ no shutdown
+interface Vlan20
+ description SERVERS gateway
+ ip address 10.10.20.1 255.255.255.0
+ no shutdown
+interface Vlan30
+ description MEDICAL IoT gateway
+ ip address 10.10.30.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ no shutdown
+interface Vlan40
+ description BUILDING IoT gateway
+ ip address 10.10.40.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ no shutdown
+interface Vlan50
+ description GUEST Wi-Fi gateway
+ ip address 10.10.50.1 255.255.255.0
+ ip helper-address 10.10.20.11
+ no shutdown
+interface Vlan99
+ description MANAGEMENT gateway
+ ip address 10.10.99.1 255.255.255.0
+ no shutdown
+!
+! ---- Floating static backup (AD 250): used only if OSPF is down ----
+ip route 0.0.0.0 0.0.0.0 10.10.255.1 250
+!
+router ospf 1
+ router-id 2.2.2.2
+ passive-interface default
+ no passive-interface GigabitEthernet0/1
+ network 10.10.0.0 0.0.255.255 area 0
+!
+ntp server 10.10.20.13
+logging host 10.10.20.13
+!
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input telnet
+end
+write memory

@@ -1,0 +1,38 @@
+! =====================================================================
+! SW-WARD-A  (Cisco 2960-24TT)  -  D0 FLAT
+! All ports stay in the default VLAN 1. Management IP is in the flat /17.
+! =====================================================================
+enable
+configure terminal
+hostname SW-WARD-A
+no ip domain-lookup
+enable secret cisco
+!
+interface FastEthernet0/1
+ description Nurse-PC-A (staff)
+interface FastEthernet0/2
+ description Monitor-A1 (patient monitor, medical IoT)
+interface FastEthernet0/3
+ description Pump-A1 (infusion pump, medical IoT)
+interface FastEthernet0/4
+ description IOT-COMPROMISED test node - location 1 (Ward A)
+interface FastEthernet0/5
+ description Staff wall jack (used for rogue-DHCP test)
+interface GigabitEthernet0/1
+ description Uplink to CORE-MLS Fa0/1
+!
+interface Vlan1
+ description Management (flat)
+ ip address 10.10.99.11 255.255.128.0
+ no shutdown
+ip default-gateway 10.10.0.1
+!
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input telnet
+end
+write memory

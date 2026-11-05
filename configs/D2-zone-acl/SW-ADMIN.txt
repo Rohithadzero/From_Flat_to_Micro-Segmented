@@ -1,0 +1,61 @@
+! =====================================================================
+! SW-ADMIN  (Cisco 2960-24TT)  -  D2 ZONE ACLs  (identical to D1 - the ACLs live on CORE-MLS)
+! =====================================================================
+enable
+configure terminal
+hostname SW-ADMIN
+no ip domain-lookup
+enable secret cisco
+!
+vlan 10
+ name STAFF
+vlan 40
+ name BLDG-IOT
+vlan 50
+ name GUEST
+vlan 99
+ name MGMT
+!
+interface FastEthernet0/1
+ description Reception-PC (staff)
+ switchport mode access
+ switchport access vlan 10
+interface FastEthernet0/2
+ description NetAdmin-PC (management)
+ switchport mode access
+ switchport access vlan 99
+interface range FastEthernet0/3 - 6
+ description Building IoT (door, fire monitor, HVAC fan, webcam)
+ switchport mode access
+ switchport access vlan 40
+interface FastEthernet0/7
+ description IOT-COMPROMISED test node - location 3 (building IoT)
+ switchport mode access
+ switchport access vlan 40
+interface FastEthernet0/8
+ description Guest-AP (guest Wi-Fi)
+ switchport mode access
+ switchport access vlan 50
+!
+interface GigabitEthernet0/1
+ description 802.1Q trunk to CORE-MLS Fa0/3
+ switchport mode trunk
+!
+interface Vlan1
+ no ip address
+ shutdown
+interface Vlan99
+ description Management
+ ip address 10.10.99.13 255.255.255.0
+ no shutdown
+ip default-gateway 10.10.99.1
+!
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input telnet
+end
+write memory

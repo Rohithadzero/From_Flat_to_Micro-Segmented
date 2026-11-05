@@ -1,0 +1,68 @@
+! =====================================================================
+! EDGE-RTR  (Cisco 2911)  -  D3 MICRO-SEGMENTATION
+! Same routing/NAT as D0-D2. Added: SSH-only management, local user,
+! VTY limited to the management VLAN, encrypted passwords, banner.
+! =====================================================================
+enable
+configure terminal
+hostname EDGE-RTR
+no ip domain-lookup
+enable secret Edge@2026
+service password-encryption
+service timestamps log datetime msec
+banner motd ^Authorised access only. Activity is logged.^
+!
+! ---- SSH prerequisites: hostname + domain + RSA key + local user ----
+ip domain-name hospital.local
+username netadmin privilege 15 secret Adm1n@2026
+crypto key generate rsa general-keys modulus 1024
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+!
+interface GigabitEthernet0/0
+ description WAN to ISP-RTR G0/0
+ ip address 198.51.100.2 255.255.255.252
+ ip nat outside
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description Routed link to CORE-MLS G0/1
+ ip address 10.10.255.1 255.255.255.252
+ ip nat inside
+ no shutdown
+!
+interface GigabitEthernet0/2
+ shutdown
+!
+ip route 0.0.0.0 0.0.0.0 198.51.100.1
+! ---- Floating static backup (AD 250): used only if OSPF is down ----
+ip route 10.10.0.0 255.255.0.0 10.10.255.2 250
+!
+!
+access-list 1 remark Hospital private range allowed to use NAT
+access-list 1 permit 10.10.0.0 0.0.255.255
+ip nat inside source list 1 interface GigabitEthernet0/0 overload
+!
+! ---- Only the management VLAN may open a VTY session ----
+access-list 10 remark Management VLAN only
+access-list 10 permit 10.10.99.0 0.0.0.255
+!
+router ospf 1
+ router-id 1.1.1.1
+ network 10.10.255.0 0.0.0.3 area 0
+ default-information originate
+!
+ntp server 10.10.20.13
+logging host 10.10.20.13
+!
+line console 0
+ login local
+ exec-timeout 5 0
+line vty 0 4
+ access-class 10 in
+ login local
+ transport input ssh
+ exec-timeout 5 0
+end
+write memory

@@ -1,0 +1,15 @@
+% =====================================================================
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+% =====================================================================
+We compared four segmentation levels of one smart-hospital network, changing only the security policy, against attacks launched from a compromised IoMT device. \ifmeasured The measurements show \else Configuration analysis predicts\expnote{} \fi that VLANs alone contain nothing and that zone ACLs protect the infrastructure but not the EHR. Only host-and-port least privilege, combined with DHCP snooping and port security, keeps the device away from patient records, and it does so while all nine clinical and IoT flows keep working. Protection costs \cfgLinesDzero{}$\rightarrow$\cfgLinesDthree{} lines and \acesDzero{}$\rightarrow$\acesDthree{} ACEs, most of it templated Layer-2 hardening. Before deployment, an independent reachability analyser and a configuration review caught a router-self-address error that our own test plan would have missed. That error is cheap to fix and easy to repeat.
+
+Future work follows from the residual risks:
+(i) isolating same-class devices with private VLANs~\cite{rfc5517}, whose own attack surface must also be assessed~\cite{Alvarez2023PerformanceAnalysis}; Packet Tracer support for PVLAN-edge ports is \probeProtected{};
+(ii) device identity through IEEE~802.1X~\cite{ieee8021x} and profile-based network access control~\cite{Garciateodoro2022NovelZero,Allouzi2024EnablingZero};
+(iii) Dynamic ARP Inspection and IP Source Guard, built on the DHCP-snooping bindings D3 already keeps;
+(iv) a DMZ interface on the ASA for the IoT registration server, an HTTPS-only EHR, and logged denies with switch Syslog;
+(v) turning the Q1 loop into controller-driven dynamic segmentation~\cite{Raval2026ImplementationDynamic,Grammatikis2021ModelingDetecting};
+(vi) repeating the study on physical switches.
+% TODO(authors): add a closing sentence in your own words (e.g. what you
+% would tell a hospital IT team), and an acknowledgment if the venue allows.

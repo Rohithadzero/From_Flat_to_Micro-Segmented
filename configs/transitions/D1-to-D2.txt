@@ -1,0 +1,5 @@
+! =====================================================================
+! TRANSITION D1 -> D2
+! Nothing to remove: D2 = D1 + three ACLs on CORE-MLS.
+! Paste configs/D2-zone-acl/CORE-MLS.txt only.
+! =====================================================================

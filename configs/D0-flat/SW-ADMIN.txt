@@ -1,0 +1,44 @@
+! =====================================================================
+! SW-ADMIN  (Cisco 2960-24TT)  -  D0 FLAT
+! Admin block: reception, network admin, building IoT, guest Wi-Fi AP.
+! =====================================================================
+enable
+configure terminal
+hostname SW-ADMIN
+no ip domain-lookup
+enable secret cisco
+!
+interface FastEthernet0/1
+ description Reception-PC (staff)
+interface FastEthernet0/2
+ description NetAdmin-PC (management)
+interface FastEthernet0/3
+ description Smart-Door (building IoT)
+interface FastEthernet0/4
+ description Fire-Monitor (building IoT)
+interface FastEthernet0/5
+ description HVAC-Fan (building IoT)
+interface FastEthernet0/6
+ description Webcam (building IoT)
+interface FastEthernet0/7
+ description IOT-COMPROMISED test node - location 3 (building IoT)
+interface FastEthernet0/8
+ description Guest-AP (guest Wi-Fi)
+interface GigabitEthernet0/1
+ description Uplink to CORE-MLS Fa0/3
+!
+interface Vlan1
+ description Management (flat)
+ ip address 10.10.99.13 255.255.128.0
+ no shutdown
+ip default-gateway 10.10.0.1
+!
+line console 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+ transport input telnet
+end
+write memory

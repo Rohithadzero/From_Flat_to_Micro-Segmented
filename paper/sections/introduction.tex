@@ -1,0 +1,26 @@
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+% =====================================================================
+A hospital ward connects very different devices to one switched network: workstations that read the electronic health record (EHR), bedside monitors that report vital signs, infusion pumps that receive drug libraries, and networked doors, smoke detectors, ventilation and cameras. Many medical devices run legacy software that the hospital cannot patch or fit with an endpoint agent. They therefore need compensating controls~\cite{Tervoort2020SolutionsMitigating}, and they are a known obstacle to Zero Trust in hospitals that still rely on a perimeter~\cite{Tyler2021TrustNo}. An intruder who controls such a device does not need to break it again. Instead the intruder moves laterally from it to more valuable systems~\cite{Smiliotopoulos2024DetectingLateral}. When the device cannot be fixed, the network has to contain it.
+
+Segmentation is the standard answer, and NIST SP~800-207 pushes it to the finest grain: network location grants no implicit trust, and access is decided per resource~\cite{nist80027}. For a hospital network engineer this raises two concrete questions: how fine must segmentation be before a compromised IoMT device is contained, and what does each step cost? Earlier Packet Tracer work has shown that VLANs alone do not isolate hosts once inter-VLAN routing is enabled~\cite{Sifawa2026ImplementationEvaluation}. An emulation study reports that micro-segmentation cuts the nodes reachable from a compromised host from 24 to~2~\cite{Odule2026SimulationValidation}. Both compare one ``before'' state with one ``after'' state in enterprise or SME networks.
+
+We extend this to a graded, hospital-specific comparison. One smart-hospital network is built in Cisco Packet Tracer~\cite{packettracer} and saved as four designs that differ only in security policy: D0, a flat LAN; D1, role-based IEEE~802.1Q VLANs~\cite{ieee8021q}; D2, coarse zone ACLs on the core switch; and D3, per-device-class VLANs with host-and-port ACLs, a stateful ASA firewall and Layer-2 hardening. The same attacks, launched from a compromised medical-device port at three locations, are run against every design. We address three research questions:
+\begin{itemize}
+\item[\textbf{RQ1}] How much does each level shrink the attack surface reachable from a compromised IoMT device?
+\item[\textbf{RQ2}] Does tighter segmentation break legitimate clinical and IoT functions?
+\item[\textbf{RQ3}] What does each level cost in configuration effort and in overhead on legitimate traffic?
+\end{itemize}
+
+\noindent Our contributions are:
+\begin{enumerate}
+\item A reproducible four-design testbed in which policy is the only independent variable. All \devsDthree{} device configurations are published as CLI files.
+\item A test suite of eight attacks mapped to MITRE ATT\&CK~\cite{mitreattack}, an automated detect-and-quarantine test, nine functional tests and an overhead test, run over 3~locations~$\times$~3~trials.
+\item \emph{Pre-deployment verification.} A static reachability analyser and a configuration review together expose a ``router-self-address'' misconfiguration class. A zone permit includes the router's own interface address, which reopens a management plane the policy was meant to close. We report the configurations before and after the fix.
+\item \emph{ptlab}, a gateway that patches Packet Tracer's script module with a generic evaluation hook. It exposes the simulator over REST and the Model Context Protocol (MCP), so the GUI set-up and every test run without manual steps.
+\item A measured configuration cost: \cfgLinesDzero{}$\rightarrow$\cfgLinesDthree{} lines and \acesDzero{}$\rightarrow$\acesDthree{} access-control entries (ACEs) from D0 to D3. From it we derive a ``minimum viable segmentation'' for small hospitals.
+\end{enumerate}
+To the best of our knowledge, no study in the 48 papers we reviewed (2020--2026) combines a hospital topology attacked from a compromised medical device, a four-level policy-only ladder, a firewall with Layer-2 hardening, functional-preservation tests, a configuration-cost metric, an independent reachability analyser cross-checked against the simulator, and an automated quarantine loop.
+
+Section~\ref{sec:related} reviews related work. Section~\ref{sec:method} describes the testbed, the designs and the test method. Section~\ref{sec:results} reports results, Section~\ref{sec:discussion} discusses them, Section~\ref{sec:limits} states limitations and residual risks, and Section~\ref{sec:conclusion} concludes.
